@@ -1,21 +1,32 @@
 class Bot:
-    def __init__(self, name, bitcion, audbudget):
+    def __init__(self, name, btc, aud):
         self.name = name
-        self.bitcion = bitcion
-        self.audbudget = audbudget
+        self.btc = btc
+        self.aud = aud
+        self.profit =0
         self.tradingrecord=[]
     def read_OHLCV_data(data):
         return
-    def buy(self,timestamp, bidprice):
+    def getaud(self):
+        return self.aud
+    def getbtc(self):
+        return self.btc
+    def getprofit(self):
+        return self.profit
+    def gettradingrecord(self):
+        return self.tradingrecord
+    def buy(self,timestamp, bidprice,amount):
         action="buy"
-        self.tradingrecord.append((timestamp,action,bidprice))
-        return
-    def sell(self,timestamp, askprice):
+        self.profit-=bidprice*amount
+        self.tradingrecord.append((timestamp,action,bidprice,amount))
+
+    def sell(self,timestamp, askprice,amount):
         action="sell"
-        self.tradingrecord.append((timestamp,action,askprice))
-        return
-    
+        self.profit+=askprice*amount
+        self.tradingrecord.append((timestamp,action,askprice,amount))
+
     def score(self):
-        valid = True
-        balance = 0
-        return balance   
+        if(self.btc!=0):
+            print("Please sold all BTC")
+            return 0
+        return self.profit   
