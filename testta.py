@@ -10,13 +10,13 @@ kraken=ccxt.kraken()
 kraken.load_markets()
 # Create a session
 
-tradepair="XBTAUD"
 print("*"*50,"get_ohlc_data","*"*50)
 
 
-ohlcdata=kraken.fetch_ohlcv("BTC/AUD",limit=40)
+ohlcdata=kraken.fetch_ohlcv("BTC/AUD",limit=72120)
 
 df=pd.DataFrame(ohlcdata,columns=["timestamp","open","high","low","close","volume"])
+print(df)
 print(df["close"])
 bb_indicator=BollingerBands(df["close"])
 upperband=bb_indicator.bollinger_hband()
