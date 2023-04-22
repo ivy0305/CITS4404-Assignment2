@@ -4,13 +4,25 @@ import pandas as pd
 kraken=ccxt.kraken()
 kraken.load_markets()
 
-ohlcdata=kraken.fetch_ohlcv("BTC/AUD",timeframe="30m",limit=700)
+ohlcdata=kraken.fetch_ohlcv("BTC/AUD",timeframe="1w",limit=720)
 
 df=pd.DataFrame(ohlcdata,columns=["timestamp","open","high","low","close","volume"])
-
+bb_indicator=BollingerBands(df["close"])
+df["upperband"]=bb_indicator.bollinger_hband()
+df["lowerband"]=bb_indicator.bollinger_lband()
+df["moving_average"]=bb_indicator.bollinger_mavg()
+atr_indicator=AverageTrueRange(df["high"],df["low"],df["close"])
+df["atr"]=atr_indicator.average_true_range()
+  
 model="base"
 startingbtc=0
 startingaud=100
 basebot=Bot(model, startingbtc, startingaud)
-basebot.run(df)
+
+for index, row in df.iterrows(): 
+    basebot.read_OHLCV_data(row) 
+    
+print("AUD:",basebot.getaud(),"BTC:",basebot.getbtc())
+if(basebot.getbtc()!=0):
+    basebot.sell( df["timestamp"].iloc[-1], df["close"].iloc[-1],basebot.getbtc()) 
 print("Score:",basebot.score())
