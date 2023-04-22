@@ -5,7 +5,7 @@ import pandas as pd
 from ta.trend import MACD
 
 # Reads data into a pandas dataframe.
-data = pd.read_csv('btc_data_w.csv', sep=',')
+data = pd.read_csv('btc_data.csv', sep=',')
 
 
 # Gets data from the Kraken exchange (BTC/AUD) for 720 data points within a specified timeframe.
