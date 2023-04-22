@@ -7,8 +7,18 @@ class Bot:
         self.aud = aud
         self.profit =0
         self.tradingrecord=[]
-    def read_OHLCV_data(data):
+    def read_OHLCV_data(self,row):
+        if(pd.isna(row["upperband"]) ):
+                return
+            #print("no:",index,"close:",row["close"],"upperband:",row["upperband"],"lowerband:",row["lowerband"])
+        if(row["close"]>row["upperband"]):
+            print("sell:",row["timestamp"],row["close"],0.001)
+            self.sell(row["timestamp"],row["close"],0.001)
+        if(row["close"]<row["lowerband"]):
+            print("buy:",row["timestamp"],row["close"],0.001)
+            self.buy(row["timestamp"],row["close"],0.001)
         return
+    
     def getaud(self):
         return self.aud
     def getbtc(self):
@@ -16,33 +26,7 @@ class Bot:
     def getprofit(self):
         return self.profit
     def gettradingrecord(self):
-        return self.tradingrecord
-    
-    def run(self,df):
-        bb_indicator=BollingerBands(df["close"])
-        df["upperband"]=bb_indicator.bollinger_hband()
-        df["lowerband"]=bb_indicator.bollinger_lband()
-        df["moving_average"]=bb_indicator.bollinger_mavg()
-        atr_indicator=AverageTrueRange(df["high"],df["low"],df["close"])
-        df["atr"]=atr_indicator.average_true_range()
-
-        
-        for index, row in df.iterrows():
-            if(pd.isna(row["upperband"]) ):
-                continue
-            #print("no:",index,"close:",row["close"],"upperband:",row["upperband"],"lowerband:",row["lowerband"])
-            if(row["close"]>row["upperband"]):
-                print("sell:",row["timestamp"],row["close"],0.001)
-                self.sell(row["timestamp"],row["close"],0.001)
-            if(row["close"]<row["lowerband"]):
-                print("buy:",row["timestamp"],row["close"],0.001)
-                self.buy(row["timestamp"],row["close"],0.001)
-        print("final AUD:",self.aud,"BTC:",self.btc)
-        if(self.btc!=0):
-            self.sell( df["timestamp"].iloc[-1], df["close"].iloc[-1],self.btc) 
-        return
-        
-        
+        return self.tradingrecord 
     def buy(self,timestamp, bidprice,amount):
         action="buy"
         self.aud-=bidprice*amount
