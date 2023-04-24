@@ -1,4 +1,4 @@
-from ta.volatility import BollingerBands, AverageTrueRange
+
 import pandas as pd
 class Bot:
     def __init__(self, model, btc, aud):
