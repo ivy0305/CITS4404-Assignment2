@@ -1,5 +1,6 @@
 
 import pandas as pd
+from Strategy import *
 class Bot:
     def __init__(self, model, btc, aud):
         self.model = model
@@ -8,13 +9,13 @@ class Bot:
         self.profit =0
         self.tradingrecord=[]
     def read_OHLCV_data(self,row):
-        if(pd.isna(row["upperband"]) ):
-                return
-            #print("no:",index,"close:",row["close"],"upperband:",row["upperband"],"lowerband:",row["lowerband"])
-        if(row["close"]>row["upperband"]):
+        strategy= Strategy()
+        action=strategy.decide(row)
+        
+        if(action=="sell"):
             print("sell:",row["timestamp"],row["close"],0.001)
             self.sell(row["timestamp"],row["close"],0.001)
-        if(row["close"]<row["lowerband"]):
+        if(action=="buy"):
             print("buy:",row["timestamp"],row["close"],0.001)
             self.buy(row["timestamp"],row["close"],0.001)
         return

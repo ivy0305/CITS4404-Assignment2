@@ -1,13 +1,14 @@
 import ccxt
 from Bot import *
 import pandas as pd
+import ta
 from ta.volatility import BollingerBands, AverageTrueRange
 from ta.trend import MACD,SMAIndicator
-
+from ta.momentum import RSIIndicator
 kraken=ccxt.kraken()
 kraken.load_markets()
 
-ohlcdata=kraken.fetch_ohlcv("BTC/AUD",timeframe="1w",limit=100)
+ohlcdata=kraken.fetch_ohlcv("BTC/AUD",timeframe="15m",limit=720)
 
 df=pd.DataFrame(ohlcdata,columns=["timestamp","open","high","low","close","volume"])
 bb_indicator=BollingerBands(df["close"])
@@ -18,9 +19,22 @@ atr_indicator=AverageTrueRange(df["high"],df["low"],df["close"])
 df["atr"]=atr_indicator.average_true_range()
 macd_indicator=MACD(df["close"])
 df["macd_diff"]=macd_indicator.macd_diff()
-SMA_indicator=SMAIndicator
-print(df)
-print(df["macd_diff"].describe(include = 'all'))
+
+
+RSI_indicator=RSIIndicator(df["close"])
+df["rsi"]=RSI_indicator.rsi()
+
+df['previouspivot'] = (df['high'] + df['low'] + df['close'])/3
+df['R1'] = (2*df['previouspivot']) - df['low']
+df['S1'] = (2*df['previouspivot']) - df['high']
+df['R2'] = (df['previouspivot']) + (df['high'] - df['low'])
+df['S2'] = (df['previouspivot']) - (df['high'] - df['low'])
+df['previouspivot']=df['previouspivot'].shift(1)
+df['R1']=df['R1'].shift(1)
+df['S1']=df['S1'].shift(1)
+df['R2']=df['R2'].shift(1)
+df['S2']=df['S2'].shift(1)
+df["isuptrend"]=df["open"]>df["previouspivot"]
 model="base"
 startingbtc=0
 startingaud=100
