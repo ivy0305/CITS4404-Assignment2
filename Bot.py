@@ -2,24 +2,23 @@
 import pandas as pd
 from Strategy import *
 class Bot:
-    def __init__(self, model, btc, aud):
-        self.model = model
+    def __init__(self, strategy, btc, aud):
         self.btc = btc
         self.aud = aud
         self.profit =0
         self.tradingrecord=[]
+        self.strategy=strategy
+        self.startingaud=aud
     def read_OHLCV_data(self,row):
-        strategy= Strategy()
-        action=strategy.decide(row)
-        
+        action=self.strategy.decide(row)
+        return action
+    def runaction(self,action,timestamp,close):
         if(action=="sell"):
-            print("sell:",row["timestamp"],row["close"],0.001)
-            self.sell(row["timestamp"],row["close"],0.001)
+            tradingamount=self.strategy.gettradingvolumepercentage()*self.startingaud/close
+            self.sell(timestamp,close,tradingamount)
         if(action=="buy"):
-            print("buy:",row["timestamp"],row["close"],0.001)
-            self.buy(row["timestamp"],row["close"],0.001)
-        return
-    
+            tradingamount=self.strategy.gettradingvolumepercentage()*self.startingaud/close
+            self.buy(timestamp,close,tradingamount)
     def getaud(self):
         return self.aud
     def getbtc(self):
@@ -42,6 +41,11 @@ class Bot:
         self.profit+=askprice*amount
         self.tradingrecord.append((timestamp,action,askprice,amount))
 
+    def finalisetrade(self,timestamp,close):
+        if(self.getbtc()!=0):
+            self.sell( timestamp, close,self.getbtc()) 
+        if(self.getbtc()<0):
+            self.buy( timestamp, close,abs(self.getbtc())) 
     def score(self):
         print("AUD:",self.aud,"BTC:",self.btc)
-        return self.profit   
+        return self.profit/self.startingaud*100  
