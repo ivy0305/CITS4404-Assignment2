@@ -2,7 +2,7 @@ import ccxt
 from Bot import *
 from Strategy import *
 import pandas as pd
-import ta
+
 from ta.volatility import BollingerBands, AverageTrueRange
 from ta.trend import MACD,SMAIndicator
 from ta.momentum import RSIIndicator
