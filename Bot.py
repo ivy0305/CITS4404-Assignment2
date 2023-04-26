@@ -1,5 +1,3 @@
-
-import pandas as pd
 from Strategy import *
 class Bot:
     def __init__(self, strategy, btc, aud):
