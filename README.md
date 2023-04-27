@@ -1,8 +1,8 @@
 # CITS4404-Assignment2
 ## Assumption
-### 1. This trading bot can sell short(Can sell BTC when you do not own any)
-### 2. In the finalisation stage, the bot will sell or buy BTC untill the balance is zero
-### 3. This bot can only see one candle stick data at a time 
+#### 1. This trading bot has the ability to sell short, which means it can sell BTC even if the user does not own any.
+#### 2. In the finalisation stage, the bot will sell or buy BTC untill the balance is zero
+#### 3. This bot is designed to process one candlestick data point at a time during runtime.
 
 ## Setup
 1. Clone this project
