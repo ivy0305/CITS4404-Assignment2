@@ -1,31 +1,33 @@
 import pandas as pd
+import datetime
 class Strategy:
 
-    def __init__(self,tradingpercentage):
-        self.tradingpercentage=tradingpercentage
-
+    def __init__(self):
+        pass
     def decide(self, row):
         pass
-    def gettradingvolumepercentage(self):
-        return self.tradingpercentage
+  
         #done
 class PPStrategy(Strategy):
-    def __init__(self,tradingpercentage):
-        self.tradingpercentage=tradingpercentage
+    def __init__(self):
+        self.nextaction="buy"
         pass
     def decide(self, row):
         action="hold"
         if(pd.isna(row["previouspivot"]) ):
                 return action
-        if(row["close"]<row["S1"] and row["isuptrend"]):
-            action="sell"
-        if(row["close"]>row["R1"] and not row["isuptrend"]):
-            action="buy"
+        if(self.nextaction=="buy"):  
+           if(row["close"]<row["S2"] and row["isuptrend"]):
+                action="buy"
+                self.nextaction="sell"
+        else:
+            if(row["close"]>row["R2"] and not row["isuptrend"]):
+                action="sell"
+                self.nextaction="buy"
         return action
         #done
 class BuyandholdStrategy(Strategy):
-    def __init__(self,tradingpercentage):
-        self.tradingpercentage=tradingpercentage
+    def __init__(self):
         self.i=0
     def decide(self, row):
         action="hold"
@@ -38,50 +40,70 @@ class BuyandholdStrategy(Strategy):
         
 class BollingerBandRSIStrategy(Strategy):
     #https://www.youtube.com/watch?v=pCmJ8wsAS_w
-    def __init__(self,tradingpercentage):
-        self.tradingpercentage=tradingpercentage
+    def __init__(self):
+        self.nextaction="buy"
         pass
     def decide(self, row):
         action="hold"
         if(pd.isna(row["rsi"]) ):
                 return action
-        if(row["low"]<row["lowerband"] and row["rsi"]<30):
-            action="buy"
-        if(row["high"]>row["upperband"] and row["rsi"]>70):
-            action="sell"
+        if( self.nextaction=="buy"):
+            if(row["close"]<row["lowerband"] and row["rsi"]<=30):
+                action="buy"
+                self.nextaction="sell"
+        if( self.nextaction=="sell"):
+            if(row["high"]>row["moving_average"]):
+                action="sell"
+                self.nextaction="buy"   
+        #print("Date:",datetime.datetime.fromtimestamp(row["timestamp"]/1000.0),row["close"] ,action)
         return action
     
 class RSIStrategy(Strategy):
-    def __init__(self,tradingpercentage):
-        self.tradingpercentage=tradingpercentage
+    def __init__(self):
+        self.nextaction="buy"
+        self.signal="hold"
         pass
     def decide(self, row):
         action="hold"
         if(pd.isna(row["macd_diff"]) ):
                 return action
-        if(row["rsi"]<30):
-            action="buy"
-        if(row["rsi"]>70):
-            action="sell"
+        if(self.nextaction=="buy"):
+            if(self.signal=="buy" and row["rsi"]>30):
+                self.signal="hold"
+                action="buy" 
+                self.nextaction="sell"
+            if(row["rsi"]<30):
+                self.signal="buy"
+        else:
+            if(self.signal=="sell" and row["rsi"]<70):
+                self.nextaction="buy"
+                self.signal="hold"
+                action="sell"
+            if(row["rsi"]>70):
+                self.signal="sell"
         return action
     
 class MACDStrategy(Strategy):
-    def __init__(self,tradingpercentage):
-        self.tradingpercentage=tradingpercentage
+    #https://www.youtube.com/watch?v=rf_EQvubKlk
+    def __init__(self):
+        self.nextaction="buy"
+        self.signal="hold"
         pass
     def decide(self, row):
         action="hold"
-        signal=""
         if(pd.isna(row["macd_diff"]) ):
                 return action
-        if(row["macd"]>row["macd_signal"]):
-            if(signal!="buy" and row["macd"]<0):
+        if(self.nextaction=="buy"):    
+            if(self.signal=="buy" and row["macd"]>row["macd_signal"] and row["macd"]<0):
                 action="buy"
-            signal="buy"
-        if(row["macd"]<row["macd_signal"]):
-            if(signal!="sell"and row["macd"]>0):
+                self.nextaction="sell"
+        else:
+            if(self.signal=="sell" and row["macd"]<row["macd_signal"] and row["macd"]>0):
                 action="sell"
-            signal="sell"
+                self.nextaction="buy"
             
-            
+        if(row["macd"]<row["macd_signal"]):
+            self.signal="buy"
+        else:
+            self.signal="sell"
         return action

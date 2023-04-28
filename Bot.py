@@ -1,49 +1,84 @@
 from Strategy import *
 class Bot:
-    def __init__(self, strategy, btc, aud):
+    def __init__(self, name,strategy, btc, aud):
         self.btc = btc
         self.aud = aud
         self.profit =0
         self.tradingrecord=[]
         self.strategy=strategy
         self.startingaud=aud
-    def read_OHLCV_data(self,row):
-        action=self.strategy.decide(row)
-        return action
-    def runaction(self,action,timestamp,close):
-        if(action=="sell"):
-            tradingamount=self.strategy.gettradingvolumepercentage()*self.startingaud/close
-            self.sell(timestamp,close,tradingamount)
-        if(action=="buy"):
-            tradingamount=self.strategy.gettradingvolumepercentage()*self.startingaud/close
-            self.buy(timestamp,close,tradingamount)
+        self.name =name
+        
     def getaud(self):
         return self.aud
+    def getname(self):
+        return self.name
     def getbtc(self):
         return self.btc
     def getprofit(self):
         return self.profit
     def gettradingrecord(self):
         return self.tradingrecord 
-    def buy(self,timestamp, bidprice,amount):
+        
+    def buy_trigger(self,t, data):
+        action=self.strategy.decide(data.loc[t])
+        if(action=="buy"):
+            return True
+        else:
+            return False
+       
+    def sell_trigger(self,t, data):
+        action=self.strategy.decide(data.loc[t])
+        if(action=="sell"):
+            return True
+        else:
+            return False
+    
+    
+    
+    def execute_trade(self,data):
+        bought = False
+       
+        for t in range(1, len(data)):
+            if not bought and self.buy_trigger(t, data) and not self.buy_trigger(t - 1, data) and not (self.sell_trigger(t, data) and not self.sell_trigger(t - 1, data)):
+                #print(f"Buy signal at t={data.loc[t, 'timestamp']}, price={data.loc[t, 'close']}")
+                commission=self.aud*0.02
+                self.aud-=commission
+                self.buy(data.loc[t, 'timestamp'],data.loc[t, 'close'],self.aud/data.loc[t, 'close'],commission)
+                bought = True
+            elif bought and self.sell_trigger(t, data) and not self.sell_trigger(t - 1, data) and not (self.buy_trigger(t, data) and not self.buy_trigger(t - 1, data)):
+                commission=self.btc*0.02
+                self.btc-=commission
+                #print(f"Sell signal at t={data.loc[t, 'timestamp']}, price={data.loc[t, 'close']}")
+                self.sell(data.loc[t, 'timestamp'],data.loc[t, 'close'],self.btc,commission)
+                bought = False
+            
+            # Sell at the close of the last day if the asset has been bought
+            if bought and t == len(data) - 1:
+                commission=self.btc*0.02
+                self.btc-=commission
+                self.sell(data.loc[t, 'timestamp'],data.loc[t, 'close'],self.btc,commission)
+                bought = False
+            
+            
+        
+   
+    def buy(self,timestamp, price,btcamount,commission):
         action="buy"
-        self.aud-=bidprice*amount
-        self.btc+=amount
-        self.profit-=bidprice*amount
-        self.tradingrecord.append((timestamp,action,bidprice,amount))
+        self.aud-=price*btcamount
+        self.btc+=btcamount
+        self.profit-=price*btcamount+commission
+        self.tradingrecord.append((timestamp,action,price,btcamount,commission))
 
-    def sell(self,timestamp, askprice,amount):
+    def sell(self,timestamp, price,btcamount,commission):
         action="sell"
-        self.aud+=askprice*amount
-        self.btc-=amount
-        self.profit+=askprice*amount
-        self.tradingrecord.append((timestamp,action,askprice,amount))
+        self.aud+=price*btcamount
+        self.btc-=btcamount
+        self.profit+=price*btcamount+commission
+        
+        self.tradingrecord.append((timestamp,action,price,btcamount,commission*price,self.profit))
 
-    def finalisetrade(self,timestamp,close):
-        if(self.getbtc()!=0):
-            self.sell( timestamp, close,self.getbtc()) 
-        if(self.getbtc()<0):
-            self.buy( timestamp, close,abs(self.getbtc())) 
     def score(self):
         print("AUD:",self.aud,"BTC:",self.btc)
-        return self.profit/self.startingaud*100  
+       
+        return self.getaud()-self.startingaud/self.startingaud*100  
