@@ -43,31 +43,39 @@ def addIndicators(df):
     df['S2']=df['S2'].shift(1)
     df["isuptrend"]=df["open"]>df["previouspivot"]
     return df 
-
+# Retrieve the historical data
 DATANUMBER=720
 kraken=ccxt.kraken()
 kraken.load_markets()
 
-ohlcdata=kraken.fetch_ohlcv("BTC/AUD",since=1620403200000,timeframe="1d",limit=DATANUMBER) #Since 1620403200000 8 May 2021 (+ 720days = 28 Apr 2023)
+ohlcdata=kraken.fetch_ohlcv("BTC/AUD",since=1620403200000,timeframe="4h",limit=DATANUMBER) #Since 1620403200000 8 May 2021 (+ 720days = 28 Apr 2023)
 
 df=pd.DataFrame(ohlcdata,columns=["timestamp","open","high","low","close","volume"])
 
 df=addIndicators(df)
 print(df)
+# *** Simulations *** #
+
+
+# Simulates a defined number of days of trade simulations with given parameters and starting cash.
 startingbtc=0
 startingaud=100
 
 BHStrategy= BuyandholdStrategy()
-BHBot=Bot("Buy and hold Strategy",BHStrategy, startingbtc, startingaud)
 PPstrategy= PPStrategy()
-PPBot=Bot("PP Strategy",PPstrategy, startingbtc, startingaud)
 BRSIstrategy= BollingerBandRSIStrategy()
-BRSIBot=Bot("BollingerBand RSI Strategy",BRSIstrategy, startingbtc, startingaud)
 RSIstrategy= RSIStrategy()
-RSIBot=Bot("RSI Strategy",RSIstrategy, startingbtc, startingaud)
 MACDstrategy= MACDStrategy()
+MACDRSIstrategy=MACDRSIStrategy()
+Votestrategy= VotingStrategy([MACDstrategy,RSIstrategy,PPstrategy])
+BHBot=Bot("Buy and hold Strategy",BHStrategy, startingbtc, startingaud)
+PPBot=Bot("PP Support and Resistance Strategy",PPstrategy, startingbtc, startingaud)
+BRSIBot=Bot("BollingerBand RSI Strategy",BRSIstrategy, startingbtc, startingaud)
+RSIBot=Bot("RSI Strategy",RSIstrategy, startingbtc, startingaud)
+VoteBot=Bot("Voting Strategy",Votestrategy, startingbtc, startingaud)
 MACDBot=Bot("MACD Strategy",MACDstrategy, startingbtc, startingaud)
-TestBots=[BHBot,MACDBot,PPBot,BRSIBot,RSIBot,MACDBot]
+MACDRSIstrategy=Bot("MACD RSI Strategy",MACDRSIstrategy, startingbtc, startingaud)
+TestBots=[BHBot,PPBot,RSIBot,BRSIBot,MACDBot,MACDRSIstrategy,VoteBot]
 for bot in TestBots:
     print("*"*50,f'{bot.getname():^30}',"*"*50)
     bot.execute_trade(df) 
