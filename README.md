@@ -25,3 +25,15 @@ pipenv shell
 ```
 python run_test.py
 ```
+## Code File
+#### run_test.py
+1. Read data
+2. Initalise indicators for the data
+3. Initalise strategy and bot
+4. Evaluate preformance
+#### Bot.py
+1. Calculate profit of the trades
+2. Execute trades according to assigned strategy's decision
+#### Strategy.py
+1. Trading logic
+2. Decide action for bot
