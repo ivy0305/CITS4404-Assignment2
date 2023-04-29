@@ -42,12 +42,14 @@ class Bot:
         for t in range(1, len(data)):
             if not bought and self.buy_trigger(t, data) and not self.buy_trigger(t - 1, data) and not (self.sell_trigger(t, data) and not self.sell_trigger(t - 1, data)):
                 #print(f"Buy signal at t={data.loc[t, 'timestamp']}, price={data.loc[t, 'close']}")
+                #commission=0
                 commission=self.aud*0.02
                 self.aud-=commission
                 self.buy(data.loc[t, 'timestamp'],data.loc[t, 'close'],self.aud/data.loc[t, 'close'],commission)
                 bought = True
             elif bought and self.sell_trigger(t, data) and not self.sell_trigger(t - 1, data) and not (self.buy_trigger(t, data) and not self.buy_trigger(t - 1, data)):
                 commission=self.btc*0.02
+                #commission=0
                 self.btc-=commission
                 #print(f"Sell signal at t={data.loc[t, 'timestamp']}, price={data.loc[t, 'close']}")
                 self.sell(data.loc[t, 'timestamp'],data.loc[t, 'close'],self.btc,commission)
@@ -55,6 +57,7 @@ class Bot:
             
             # Sell at the close of the last day if the asset has been bought
             if bought and t == len(data) - 1:
+                #commission=0
                 commission=self.btc*0.02
                 self.btc-=commission
                 self.sell(data.loc[t, 'timestamp'],data.loc[t, 'close'],self.btc,commission)
