@@ -86,10 +86,10 @@ def mutation(individual):
     mutated_individual[idx] = random.randint(10, 100) if idx == 0 else random.randint(100, 500)
     return mutated_individual
 
-def evaluate_fitness(individual, short_window, long_window):
+def evaluate_fitness(individual):
     data = fetch_data()
     data = apply_ta(data, individual[0], individual[1])
-    final_capital = evaluate_bot(data, short_window, long_window)
+    final_capital = evaluate_bot(data, individual[0], individual[1])
     return (final_capital,)
 
 
@@ -106,7 +106,7 @@ toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.att
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 # Define the fitness function
-toolbox.register("evaluate", evaluate_fitness, short_window=10, long_window=50)
+toolbox.register("evaluate", evaluate_fitness)
 toolbox.register("mate", tools.cxTwoPoint)
 toolbox.register("mutate", tools.mutUniformInt, low=10, up=100, indpb=MUTATION_RATE)
 toolbox.register("select", tools.selTournament, tournsize=3)
@@ -123,11 +123,15 @@ for gen in range(N_GENERATIONS):
     offspring = algorithms.varAnd(pop, toolbox, cxpb=0.5, mutpb=0.1)
     fits = toolbox.map(toolbox.evaluate, offspring)
     for fit, ind in zip(fits, offspring):
-        ind.fitness.values = (fit,)
-    hof.update(offspring)
+        ind.fitness.values = fit
+
+    # Update the population with the offspring
+    pop[:] = offspring
+    hof.update(pop)
+    
     record = stats.compile(pop)
     print(f"Generation {gen+1}: {record}")
-    pop = toolbox.select(offspring, k=len(pop))
+
 best_params = hof[0]
 best_fitness = evaluate_fitness(best_params)
 
@@ -156,7 +160,7 @@ def main():
         for mutant in offspring:
             if random.random() < 0.2:
                 toolbox.mutate(mutant)
-                del mutant.f
+                del mutant.fitness.values
 
 # Print the best parameters and fitness
 print(f"Best parameters: {best_params}")
