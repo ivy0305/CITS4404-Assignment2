@@ -6,7 +6,7 @@ import numpy as np
 from deap import creator, base, tools, algorithms
 
 # Genetic Algorithm parameters
-IND_SIZE = 2
+IND_SIZE = 3
 POP_SIZE = 10
 N_GENERATIONS = 5
 MUTATION_RATE = 0.1
@@ -20,21 +20,24 @@ def fetch_data():
     data['timestamp'] = pd.to_datetime(data['timestamp'], unit='ms')
     return data 
 
-def apply_ta(data, short_window, long_window):
+def apply_ta(data, short_window, long_window, rsi_window):
     # SMA Indicator
     data['sma_short'] = ta.trend.SMAIndicator(data['close'], window=short_window).sma_indicator()
     data['sma_long'] = ta.trend.SMAIndicator(data['close'], window=long_window).sma_indicator()
 
+    # RSI Indicator
+    data['rsi'] = ta.momentum.RSIIndicator(data['close'], window=rsi_window).rsi()
+
     return data
 
 def buy_trigger(t, data):
-    return data.loc[t, 'sma_short'] > data.loc[t, 'sma_long']
+    return data.loc[t, 'sma_short'] > data.loc[t, 'sma_long'] and data.loc[t, 'rsi'] < 30
 
 def sell_trigger(t, data):
-    return data.loc[t, 'sma_short'] < data.loc[t, 'sma_long']
+    return data.loc[t, 'sma_short'] < data.loc[t, 'sma_long'] and data.loc[t, 'rsi'] > 70
 
-def evaluate_bot(data, short_window, long_window, initial_capital=100, fee_percentage=0.02):
-    data = apply_ta(data, short_window, long_window)
+def evaluate_bot(data, short_window, long_window, rsi_window, initial_capital=100, fee_percentage=0.02):
+    data = apply_ta(data, short_window, long_window, rsi_window)
     capital = initial_capital
     btc_holding = 0
     bought = False
@@ -88,10 +91,9 @@ def mutation(individual):
 
 def evaluate_fitness(individual):
     data = fetch_data()
-    data = apply_ta(data, individual[0], individual[1])
-    final_capital = evaluate_bot(data, individual[0], individual[1])
+    data = apply_ta(data, individual[0], individual[1], individual[2])
+    final_capital = evaluate_bot(data, individual[0], individual[1], individual[2])
     return (final_capital,)
-
 
 # Run the optimization using the genetic algorithm
 toolbox = base.Toolbox()
