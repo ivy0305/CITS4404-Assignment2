@@ -80,8 +80,8 @@ class MACDProblem(ElementwiseProblem):
         super().__init__(n_var=4,
                          n_obj=1,
                          n_ieq_constr=1,
-                         xl=np.array([1, 1, 1, -400]),
-                         xu=np.array([720, 720, 720, 400]),
+                         xl=np.array([1, 1, 1, -100]),
+                         xu=np.array([50, 50, 50, 100]),
                          vtype=int)
         self.df=df
 
@@ -94,4 +94,4 @@ class MACDProblem(ElementwiseProblem):
         out["F"] = MACDBot.getaud()*-1
         g1=x[1] - x[0]-1
         g2=len(MACDBot.gettradingrecord())-30
-        out["G"] =[ g1]
+        out["G"] =[ g1,g2]
