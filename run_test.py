@@ -15,23 +15,7 @@ def printrecord(bot):
         else:
             print("Date:",datetime.datetime.fromtimestamp(i[0]/1000.0),"\tAction:",i[1],"\tPrice:",i[2],"\tAmount(BTC):",i[3],"\tCommission(AUD):",i[4])
         
-def addIndicators(df):
-    bb_indicator=BollingerBands(df["close"],30,2)
-    df["upperband"]=bb_indicator.bollinger_hband()
-    df["lowerband"]=bb_indicator.bollinger_lband()
-    df["moving_average"]=bb_indicator.bollinger_mavg()
-    atr_indicator=AverageTrueRange(df["high"],df["low"],df["close"])
-    df["atr"]=atr_indicator.average_true_range()
 
-    macd_indicator=MACD(df["close"],26,12,9)
-    df["macd_signal"]=macd_indicator.macd_signal()
-    df["macd"]=macd_indicator.macd()
-    df["macd_diff"]=macd_indicator.macd_diff()
-    
-    RSI_indicator=RSIIndicator(df["close"],12)
-    df["rsi"]=RSI_indicator.rsi()
-
-    return df 
 # Retrieve the historical data
 DATANUMBER=720
 kraken=ccxt.kraken()
@@ -41,37 +25,81 @@ ohlcdata=kraken.fetch_ohlcv("BTC/AUD",since=1620403200000,timeframe="1d",limit=D
 
 df=pd.DataFrame(ohlcdata,columns=["timestamp","open","high","low","close","volume"])
 
-#df=addIndicators(df)
-print(df)
-# *** Simulations *** #
-
-Problem=BTCProblem(df)
-algorithm = PSO(adaptive=True, pop_size=100, sampling=IntegerRandomSampling(), repair=RoundingRepair(), pertube_best=False)
-
-res = minimize(Problem,
-               algorithm,
-               seed=1,
-               verbose=True)
-print("Best solution found: \nX = %s\nF = $%s\nCV = %s\nG=%s\n" % (res.X, -1 * res.F[0], res.CV[0],res.G[0]))
-
-
-
 startingbtc=0
 startingaud=100
-MACDRSIstrategy=MACDRSIStrategy(slow=res.X[0],fast=res.X[1],sign=res.X[2],rsiwindow=res.X[3],buythreshold=res.X[4],sellthreshold=res.X[5],macdthreshold=res.X[6])
-MACDRSIBot=Bot("PSO MACD RSI Strategy",MACDRSIstrategy, startingbtc, startingaud)
+#df=addIndicators(df)
+#print(df)
+# *** Simulations *** #
+def testBollingerBandRSIProblem():
+    Problem=BollingerBandRSIProblem(df)
+    algorithm = PSO(adaptive=True, pop_size=100, sampling=IntegerRandomSampling(), repair=RoundingRepair(), pertube_best=False)
+    res = minimize(Problem,
+                algorithm,
+                seed=1,
+                verbose=True)
+    print("Best solution found: \nX = %s\nF = $%s\nCV = %s\nG=%s\n" % (res.X, -1 * res.F[0], res.CV[0],res.G[0]))
 
-BHStrategy= BuyandholdStrategy()
-BHBot=Bot("Buy and hold Strategy",BHStrategy, startingbtc, startingaud)
-TestBots=[BHBot,MACDRSIBot]
-for bot in TestBots:
+    BBRSIstrategy=BollingerBandRSIStrategy(rsiwindow=res.X[0],window=res.X[1],window_dev_square=res.X[2],buyrsithreshold=res.X[3],sellrsithreshold=res.X[4])
+    BBRSIBot=Bot("PSO MACD RSI Strategy",BBRSIstrategy, startingbtc, startingaud)
+    executebot(BBRSIBot)
+    
+def testMACDRSIProblem():
+    Problem=MACDRSIProblem(df)
+    algorithm = PSO(adaptive=True, pop_size=100, sampling=IntegerRandomSampling(), repair=RoundingRepair(), pertube_best=False)
+    res = minimize(Problem,
+                algorithm,
+                seed=1,
+                verbose=True)
+    print("Best solution found: \nX = %s\nF = $%s\nCV = %s\nG=%s\n" % (res.X, -1 * res.F[0], res.CV[0],res.G[0]))
+    MACDRSIstrategy=MACDRSIStrategy(slow=res.X[0],fast=res.X[1],sign=res.X[2],rsiwindow=res.X[3],buyrsithreshold=res.X[4],sellrsithreshold=res.X[5],macdthreshold=res.X[6])
+    MACDRSIBot=Bot("PSO MACD RSI Strategy",MACDRSIstrategy, startingbtc, startingaud)
+    executebot(MACDRSIBot)
+    
+def testRSIProblem():
+    Problem=RSIProblem(df)
+    algorithm = PSO(adaptive=True, pop_size=100, sampling=IntegerRandomSampling(), repair=RoundingRepair(), pertube_best=False)
+    res = minimize(Problem,
+                algorithm,
+                seed=1,
+                verbose=True)
+    print("Best solution found: \nX = %s\nF = $%s\nCV = %s\nG=%s\n" % (res.X, -1 * res.F[0], res.CV[0],res.G[0]))
+    RSIstrategy=RSIStrategy(rsiwindow=res.X[0],buyrsithreshold=res.X[1],sellrsithreshold=res.X[2])
+    RSIBot=Bot("PSO RSI Strategy",RSIstrategy, startingbtc, startingaud)
+    executebot(RSIBot)
+ 
+def testMACDProblem():
+    Problem=MACDProblem(df)
+    algorithm = PSO(adaptive=True, pop_size=100, sampling=IntegerRandomSampling(), repair=RoundingRepair(), pertube_best=False)
+    res = minimize(Problem,
+                algorithm,
+                seed=1,
+                verbose=True)
+    print("Best solution found: \nX = %s\nF = $%s\nCV = %s\nG=%s\n" % (res.X, -1 * res.F[0], res.CV[0],res.G[0]))
+    MACDstrategy=MACDStrategy(slow=res.X[0],fast=res.X[1],sign=res.X[2],macdthreshold=res.X[3])
+    MACDBot=Bot("PSO MACD RSI Strategy",MACDstrategy, startingbtc, startingaud)
+    executebot(MACDBot) 
+    
+def executebot(bot):
     print("*"*50,f'{bot.getname():^30}',"*"*50)
     bot.execute_trade(df) 
   
     print("Result:",round(bot.score(),3),"%")
     print("Total Trade Made:",len(bot.gettradingrecord())," times")
     printrecord(bot)
+BHStrategy= BuyandholdStrategy()
+BHBot=Bot("Buy and hold Strategy",BHStrategy, startingbtc, startingaud)
+TestBots=[BHBot]
 
+if __name__ == "__main__": 
+    #testBollingerBandRSIProblem()
+    #testMACDRSIProblem()
+    #testRSIProblem()
+    testMACDProblem()
+    BHStrategy= BuyandholdStrategy()
+    BHBot=Bot("Buy and hold Strategy",BHStrategy, startingbtc, startingaud)
+    executebot(BHBot)
+   
+    
 
 '''
 # Simulates a defined number of days of trade simulations with given parameters and starting cash.

@@ -3,6 +3,7 @@ import datetime
 from ta.volatility import BollingerBands, AverageTrueRange
 from ta.trend import MACD,SMAIndicator
 from ta.momentum import RSIIndicator
+import math
 class Strategy:
 
     def __init__(self):
@@ -38,49 +39,69 @@ class BuyandholdStrategy(Strategy):
             action="buy"
         return action
         #done
-    '''
+
      
 class BollingerBandRSIStrategy(Strategy):
     #https://www.youtube.com/watch?v=pCmJ8wsAS_w
-    def __init__(self):
+    def __init__(self,rsiwindow,window, window_dev_square,buyrsithreshold,sellrsithreshold):
+        self.rsiwindow=rsiwindow
+        self.BBwindow=window
+        self.window_dev=math.sqrt( window_dev_square)
+        self.buyrsithreshold=buyrsithreshold
+        self.sellrsithreshold=sellrsithreshold
+        self.minimumworkingday=max(rsiwindow,window)
+        
         pass
     def decide(self, data,t):
         action="hold"
+        if(t<self.minimumworkingday):
+            return action
+        closevalue=data["close"][t-1]
+        bb_indicator=BollingerBands(data["close"],self.BBwindow,self.window_dev)
+        upperband=bb_indicator.bollinger_hband()[t-1]
+        lowerband=bb_indicator.bollinger_lband()[t-1]
+        
+        RSI_indicator=RSIIndicator(data["close"],window=self.rsiwindow)
+        rsi=RSI_indicator.rsi()[t-1]
+       
         #skip if no rsi data
-        if(pd.isna(data["rsi"]) ):
-                return action
     
-        if(data["close"]<data["lowerband"] and data["rsi"]<=30):
+        if(closevalue<lowerband and rsi<self.buyrsithreshold):
             action="buy"
     
-        if(data["high"]>data["moving_average"]):
+        if(closevalue>upperband and rsi<self.sellrsithreshold):
             action="sell"
        
         #print("Date:",datetime.datetime.fromtimestamp(row["timestamp"]/1000.0),row["close"] ,action)
         return action
-    
+
 class RSIStrategy(Strategy):
-    def __init__(self):
-  
+    def __init__(self,rsiwindow,buyrsithreshold,sellrsithreshold):
+        self.rsiwindow=rsiwindow
+        self.buyrsithreshold=buyrsithreshold
+        self.sellrsithreshold=sellrsithreshold
+        self.minimumworkingday=rsiwindow
         self.signal="hold"
         pass
     def decide(self, data,t):
         action="hold"
-        if(pd.isna(data["macd_diff"]) ):
-                return action
-     
-        if(self.signal=="buy" and data["rsi"]>30):
+        if(t<self.minimumworkingday):
+            return action
+        RSI_indicator=RSIIndicator(data["close"],window=self.rsiwindow)
+        rsi=RSI_indicator.rsi()[t-1]    
+        
+        if(self.signal=="buy" and rsi>self.buyrsithreshold):
             self.signal="hold"
             action="buy"  
-        if(self.signal=="sell" and data["rsi"]<70):
+        if(self.signal=="sell" and rsi<self.sellrsithreshold):
             self.signal="hold"
             action="sell"
-        if(data["rsi"]>70):
+        if(rsi>70):
             self.signal="sell"
-        if(data["rsi"]<30):
+        if(rsi<30):
             self.signal="buy"
         return action
-    
+    '''      
 class MACDStrategy(Strategy):
     #https://www.youtube.com/watch?v=rf_EQvubKlk
     def __init__(self):
@@ -106,18 +127,16 @@ class MACDStrategy(Strategy):
          '''  
 class MACDRSIStrategy(Strategy):
     #https://www.youtube.com/watch?v=rf_EQvubKlk
-    def __init__(self,slow,fast,sign,rsiwindow,buythreshold,sellthreshold,macdthreshold):
+    def __init__(self,slow,fast,sign,rsiwindow,buyrsithreshold,sellrsithreshold,macdthreshold):
         self.signal="hold"
         self.slow=slow
         self.fast=fast
         self.sign=sign
         self.rsiwindow=rsiwindow
-        self.buythreshold=buythreshold
-        self.sellthreshold=sellthreshold
+        self.buyrsithreshold=buyrsithreshold
+        self.sellrsithreshold=sellrsithreshold
         self.minimumworkingday=slow+sign-2 
         self.macdthreshold=macdthreshold
-        self.close=pd.DataFrame(columns=["close"])
-        
         pass
     def decide(self, data,t):
         action="hold"
@@ -130,9 +149,9 @@ class MACDRSIStrategy(Strategy):
   
         RSI_indicator=RSIIndicator(data["close"],window=self.rsiwindow)
         rsi=RSI_indicator.rsi()[t-1]
-        if(macd>macd_signal and macd< self.macdthreshold and rsi<self.buythreshold):
+        if(macd>macd_signal and macd< self.macdthreshold and rsi<self.buyrsithreshold):
             action="buy"
-        if( macd<macd_signal and macd>self.macdthreshold and rsi>self.sellthreshold):
+        if( macd<macd_signal and macd>self.macdthreshold and rsi>self.sellrsithreshold):
             action="sell"
           
         '''
@@ -143,18 +162,52 @@ class MACDRSIStrategy(Strategy):
         if(self.signal=="sell" and macd<macd_signal and macd>self.macdthreshold and rsi>self.sellthreshold):
             action="sell"
             self.signal="hold"
-            
+           
         if(macd<macd_signal):
             self.signal="buy"
         else:
             self.signal="sell"
-        
-        '''    
-       
+        ''' 
         return action
+
+class MACDStrategy(Strategy):
+    #https://www.youtube.com/watch?v=rf_EQvubKlk
+    def __init__(self,slow,fast,sign,macdthreshold):
+        self.signal="hold"
+        self.slow=slow
+        self.fast=fast
+        self.sign=sign
+        self.minimumworkingday=slow+sign-2 
+        self.macdthreshold=macdthreshold
+        pass
+    def decide(self, data,t):
+        action="hold"
+        if(t<=self.minimumworkingday):
+            return action
+        macd_indicator=MACD(data["close"],window_slow=self.slow,window_fast=self.fast,window_sign=self.sign)
+        macd_signal=macd_indicator.macd_signal()[t-1]
+        macd=macd_indicator.macd()[t-1]
+        #macd_diff=macd_indicator.macd_diff()[-1]
     
-'''  
+        if(self.signal=="buy" and macd>macd_signal and macd< self.macdthreshold ):
+            action="buy"
+       
     
+        if(self.signal=="sell" and macd<macd_signal and macd> self.macdthreshold ):
+            action="sell"
+           
+           
+        if(macd<macd_signal and self.signal!="buy"):
+            self.signal="buy"
+        if(macd>macd_signal and self.signal!="sell"):
+            self.signal="sell"
+        
+ 
+        
+           
+       
+
+'''
 class VotingStrategy(Strategy):
     def __init__(self,strategyList):
         self.StrategyList=strategyList
