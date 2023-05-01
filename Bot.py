@@ -45,12 +45,7 @@ class Bot:
         df['S2']=df['S2'].shift(1)
         df["isuptrend"]=df["open"]>df["previouspivot"]
         return df 
-    def addMACDIndicator(df,slow,fast,sign):  
-        macd_indicator=MACD(df["close"],window_slow=slow,window_fast=fast,window_sign=sign)
-        df["macd_signal"]=macd_indicator.macd_signal()
-        df["macd"]=macd_indicator.macd()
-        df["macd_diff"]=macd_indicator.macd_diff()  
-        return df
+
     def addRSIIndicator(df,window):
         RSI_indicator=RSIIndicator(df["close"],window)
         df["rsi"]=RSI_indicator.rsi()
