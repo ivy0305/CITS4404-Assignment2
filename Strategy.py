@@ -185,23 +185,17 @@ class MACDStrategy(Strategy):
         if(t<=self.minimumworkingday):
             return action
         macd_indicator=MACD(data["close"],window_slow=self.slow,window_fast=self.fast,window_sign=self.sign)
-        macd_signal=macd_indicator.macd_signal()[t-1]
-        macd=macd_indicator.macd()[t-1]
+        macd_signal=macd_indicator.macd_signal()
+        macd=macd_indicator.macd()
         #macd_diff=macd_indicator.macd_diff()[-1]
     
-        if(self.signal=="buy" and macd>macd_signal and macd< self.macdthreshold ):
-            action="buy"
-       
-    
-        if(self.signal=="sell" and macd<macd_signal and macd> self.macdthreshold ):
-            action="sell"
-           
-           
-        if(macd<macd_signal and self.signal!="buy"):
-            self.signal="buy"
-        if(macd>macd_signal and self.signal!="sell"):
-            self.signal="sell"
-        
+        if macd[t-1] > macd_signal[t-1]and macd[t-2] < macd_signal[t-2] and macd[t-1] <self.macdthreshold:
+            # MACD crossed above signal line - buy signal
+            action='buy'
+        if macd[t-1] < macd_signal[t-1] and macd[t-2] > macd_signal[t-2] and macd[t-1] >self.macdthreshold:
+            # MACD crossed below signal line - sell signal
+            action='sell'
+        return action
  
         
            
