@@ -25,7 +25,7 @@ DATANUMBER=720
 
 DAY=86400000
 MONTH=DAY*30
-BASE=1623456000000
+BASE=1623456000000+8*MONTH
 kraken=ccxt.kraken()
 kraken.load_markets()
 
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     startingaud=100
     bhstartingaud=100
     wincount=0
-    write2file(filename,f"\nTesting Date:\t {datetime.today().strftime('%Y/%m/%d %H:%M:%S')}\nStrategy:\t {botname}\nTrading pair:\t{tradingMarket}\nStarting AUD:\t{startingaud}\nNumber of Iteration:{testmonthnumber}\n\n\n")
+    write2file(filename,f"\nTesting Date:\t {datetime.today().strftime('%Y/%m/%d %H:%M:%S')}\nStrategy:\t {botname}\nTrading pair:\t{tradingMarket}\nStarting AUD:\t{startingaud}\nNumber of Iteration:\t{testmonthnumber}\n\n\n")
     write2file(filename,f'\n\n{"*"*180}\n\n')
     for i in range(testmonthnumber):
         print("="*160)
