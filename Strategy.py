@@ -1,8 +1,9 @@
 import pandas as pd
 import datetime
+from ta.volume import VolumeWeightedAveragePrice,MFIIndicator
 from ta.volatility import BollingerBands, AverageTrueRange
 from ta.trend import MACD,SMAIndicator
-from ta.momentum import RSIIndicator
+from ta.momentum import RSIIndicator,StochasticOscillator
 import math
 class Strategy:
 
@@ -125,8 +126,126 @@ class MACDStrategy(Strategy):
             self.signal="sell"
         return action
          '''  
-class MACDRSIStrategy(Strategy):
+         
+class AIMACDRSIStrategy(Strategy):
     #https://www.youtube.com/watch?v=rf_EQvubKlk
+    def __init__(self,macd_buy_threshold,macd_sell_threshold,macdsignal_buy_threshold,macdsignal_sell_threshold,macd_diff_threshold,buyrsithreshold,sellrsithreshold):
+        self.signal="hold"
+        self.macd_buy_threshold=macd_buy_threshold
+        self.macd_sell_threshold=macd_sell_threshold
+        self.macdsignal_buy_threshold=macdsignal_buy_threshold
+        self.macdsignal_sell_threshold=macdsignal_sell_threshold
+        self.macd_diff_threshold=macd_diff_threshold
+        self.buyrsithreshold=buyrsithreshold
+        self.sellrsithreshold=sellrsithreshold
+        pass
+    def decide(self, data,t):
+        action="hold"
+        macd_indicator=MACD(data["close"])
+        macd_signal=macd_indicator.macd_signal()[t-1]   
+        macd=macd_indicator.macd()[t-1]   
+        macd_diff=macd_indicator.macd_diff()[t-1]   
+        RSI_indicator=RSIIndicator(data["close"])
+        rsi=RSI_indicator.rsi()[t-1]
+        if(pd.isna(macd_signal) or pd.isna(macd) or pd.isna(macd_diff) or pd.isna(rsi)):
+            return action
+     
+        if( macd < self.macd_buy_threshold  and macd_signal< self.macdsignal_buy_threshold and macd_diff> self.macd_diff_threshold and rsi<self.buyrsithreshold):
+            action="buy"
+        if( macd > self.macd_sell_threshold  and macd_signal> self.macdsignal_sell_threshold and macd_diff< self.macd_diff_threshold and rsi>self.sellrsithreshold):
+            action="sell" 
+        return action
+       
+        '''
+        if( macd[t-1] > macd_signal[t-1]and macd[t-2] < macd_signal[t-2]  and macd[t-1]< self.macdthreshold and rsi<self.buyrsithreshold):
+            action="buy"
+        if( macd[t-1] < macd_signal[t-1] and macd[t-2] > macd_signal[t-2] and macd[t-1]>self.macdthreshold and rsi>self.sellrsithreshold):
+            action="sell"
+        '''
+class AIStrategy(Strategy):
+    def __init__(self, k_threshold,d_threshold,rsi_buy_threshold,rsi_sell_threshold):
+        self.signal="hold"
+        self.k_threshold=k_threshold
+        self.d_threshold=d_threshold
+        self.rsi_buy_threshold=rsi_buy_threshold
+        self.rsi_sell_threshold=rsi_sell_threshold
+        pass
+    def decide(self, data,t):
+        action="hold"
+        mfind=MFIIndicator(data['high'],data['low'],data['close'],data['volume'])
+        mfi=mfind.money_flow_index()[t-1]
+        stochasticOscillator=StochasticOscillator(data['high'],data['low'],data['close'])
+        k=stochasticOscillator.stoch()[t-1]
+        d=stochasticOscillator.stoch()[t-1]
+        RSI_indicator=RSIIndicator(data["close"])
+        rsi=RSI_indicator.rsi()[t-1]
+        if(pd.isna(k) or pd.isna(d) or pd.isna(mfi) or pd.isna(rsi)):
+            return action
+        
+        if( k > self.k_threshold  and d> self.d_threshold and mfi< 20 and rsi<self.rsi_buy_threshold):
+            action="buy"
+        if( k < self.k_threshold  and d<self.d_threshold and mfi> 80 and rsi>self.rsi_sell_threshold):
+            action="sell" 
+        return action
+              
+class AIVotingStrategy(Strategy):
+    def __init__(self, mfi_buy_threshold,mfi_sell_threshold,k_buy_threshold,k_sell_threshold,rsi_buy_threshold,rsi_sell_threshold,kd_w,k_w,rsi_w,mfi_w):
+        self.signal="hold"
+        self.mfi_buy_threshold=mfi_buy_threshold
+        self.mfi_sell_threshold=mfi_sell_threshold
+        self.k_buy_threshold=k_buy_threshold
+        self.k_sell_threshold=k_sell_threshold
+        self.rsi_buy_threshold=rsi_buy_threshold
+        self.rsi_sell_threshold=rsi_sell_threshold
+        self.kd_w=kd_w
+        self.k_w=k_w
+        self.rsi_w=rsi_w
+        self.mfi_w=mfi_w
+    def decide(self, data,t):
+        action={"hold":0,"buy":0,"sell":0}
+       
+        mfind=MFIIndicator(data['high'],data['low'],data['close'],data['volume'])
+        mfi=mfind.money_flow_index()[t-1]
+        stochasticOscillator=StochasticOscillator(data['high'],data['low'],data['close'],window=9)
+        k=stochasticOscillator.stoch()
+        d=stochasticOscillator.stoch_signal()
+        RSI_indicator=RSIIndicator(data["close"],window=6)
+        rsi=RSI_indicator.rsi()[t-1]
+        if(pd.isna(k[t-1]) or pd.isna(d[t-1]) or pd.isna(mfi) or pd.isna(rsi)):
+            return action
+        
+        if k[t-1] > d[t-1]and k[t-2] < d[t-2] and k[t-1] <30:
+            # kd crossed above signal line - buy signal
+            action["buy"]+=self.kd_w
+        if k[t-1] < d[t-1] and k[t-2] > d[t-2] and k[t-1] >70:
+            # kd crossed below signal line - sell signal
+            action["sell"]+=self.kd_w
+            
+        if( k[t-1]<self.k_buy_threshold ):
+            action["buy"]+=self.k_w
+        elif(k[t-1]>self.k_sell_threshold ):
+            action["sell"]+=self.k_w
+        else:
+            action["hold"]+=self.k_w
+        
+        if( rsi<self.rsi_buy_threshold ):
+            action["buy"]+=self.rsi_w
+        elif(rsi>self.rsi_sell_threshold ):
+            action["sell"]+=self.rsi_w
+        else:
+            action["hold"]+=self.rsi_w
+            
+        if( mfi<self.mfi_buy_threshold ):
+            action["buy"]+=self.mfi_w
+        elif(mfi>self.mfi_sell_threshold ):
+            action["sell"]+=self.mfi_w
+        else:
+            action["hold"]+=self.mfi_w
+            
+        votedAction = max(action, key=lambda k: action[k])
+        return votedAction       
+             
+class MACDRSIStrategy(Strategy):
     def __init__(self,slow,fast,sign,rsiwindow,buyrsithreshold,sellrsithreshold,macdthreshold):
         self.signal="hold"
         self.slow=slow
@@ -143,31 +262,23 @@ class MACDRSIStrategy(Strategy):
         if(t<=self.minimumworkingday):
             return action
         macd_indicator=MACD(data["close"],window_slow=self.slow,window_fast=self.fast,window_sign=self.sign)
-        macd_signal=macd_indicator.macd_signal()[t-1]
-        macd=macd_indicator.macd()[t-1]
+        macd_signal=macd_indicator.macd_signal()
+        macd=macd_indicator.macd()
         #macd_diff=macd_indicator.macd_diff()[-1]
   
         RSI_indicator=RSIIndicator(data["close"],window=self.rsiwindow)
         rsi=RSI_indicator.rsi()[t-1]
-        if(macd>macd_signal and macd< self.macdthreshold and rsi<self.buyrsithreshold):
-            action="buy"
-        if( macd<macd_signal and macd>self.macdthreshold and rsi>self.sellrsithreshold):
-            action="sell"
-          
         '''
-         if(self.signal=="buy" and macd>macd_signal and macd< self.macdthreshold and rsi<self.buythreshold):
+        if( macd[t-1] > macd_signal[t-1]and macd[t-2] < macd_signal[t-2]  and macd[t-1]< self.macdthreshold and rsi<self.buyrsithreshold):
             action="buy"
-            self.signal="hold"
-    
-        if(self.signal=="sell" and macd<macd_signal and macd>self.macdthreshold and rsi>self.sellthreshold):
+        if( macd[t-1] < macd_signal[t-1] and macd[t-2] > macd_signal[t-2] and macd[t-1]>self.macdthreshold and rsi>self.sellrsithreshold):
             action="sell"
-            self.signal="hold"
-           
-        if(macd<macd_signal):
-            self.signal="buy"
-        else:
-            self.signal="sell"
-        ''' 
+        '''
+        
+        if( macd[t-1] > macd_signal[t-1]  and macd[t-1]< self.macdthreshold and rsi<self.buyrsithreshold):
+            action="buy"
+        if( macd[t-1] < macd_signal[t-1] and macd[t-1]>self.macdthreshold and rsi>self.sellrsithreshold):
+            action="sell" 
         return action
 
 class MACDStrategy(Strategy):

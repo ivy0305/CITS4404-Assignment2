@@ -13,22 +13,30 @@ class MACDRSIProblem(ElementwiseProblem):
     def __init__(self,df):
         super().__init__(n_var=7,
                          n_obj=1,
-                         n_ieq_constr=2,
+                         n_ieq_constr=1,
                          xl=np.array([1, 1, 1, 1,1, 0,-100]),
-                         xu=np.array([50, 50, 50, 100, 100, 99,100]),
+                         xu=np.array([50, 50, 50, 50, 100, 99,100]),
                          vtype=int)
         self.df=df
 
     def _evaluate(self, x, out, *args, **kwargs):
-        startingbtc=0
         startingaud=100
         MACDRSIstrategy=MACDRSIStrategy(slow=x[0],fast=x[1],sign=x[2],rsiwindow=x[3],buyrsithreshold=x[4],sellrsithreshold=x[5],macdthreshold=x[6])
-        MACDRSIBot=Bot("MACD RSI Strategy",MACDRSIstrategy, startingbtc, startingaud)
+        MACDRSIBot=Bot("MACD RSI Strategy",MACDRSIstrategy, startingaud)
         MACDRSIBot.execute_trade( self.df) 
-        out["F"] = MACDRSIBot.getaud()*-1
+
+        f1=MACDRSIBot.getaud()*-1
+
+        if(len(MACDRSIBot.gettradingrecord())!=0):
+            f2=MACDRSIBot.getwintime()/(len(MACDRSIBot.gettradingrecord())/2)*-1
+        f2=MACDRSIBot.getwintime()*-1
+      
+        #print(np.array((f1,f2)))
+        out["F"] =[f1]
+        #print(out["F"])
         g1=x[1] - x[0]-1
-        g2=len(MACDRSIBot.gettradingrecord())-30
-        out["G"] =[ g1,g2]
+       
+        out["G"] =g1
   
         
 class BollingerBandRSIProblem(ElementwiseProblem):
@@ -43,10 +51,9 @@ class BollingerBandRSIProblem(ElementwiseProblem):
         self.df=df
 
     def _evaluate(self, x, out, *args, **kwargs):
-        startingbtc=0
         startingaud=100
         BBRSIstrategy=BollingerBandRSIStrategy(rsiwindow=x[0],window=x[1],window_dev_square=x[2],buyrsithreshold=x[3],sellrsithreshold=x[4])
-        BBRSIBot=Bot("Bollinger Band RSIStrategy",BBRSIstrategy, startingbtc, startingaud)
+        BBRSIBot=Bot("Bollinger Band RSI Strategy",BBRSIstrategy, startingaud)
         BBRSIBot.execute_trade( self.df) 
         out["F"] = BBRSIBot.getaud()*-1
 
@@ -66,14 +73,13 @@ class RSIProblem(ElementwiseProblem):
         self.df=df
 
     def _evaluate(self, x, out, *args, **kwargs):
-        startingbtc=0
         startingaud=100
         RSIstrategy=RSIStrategy(rsiwindow=x[0],buyrsithreshold=x[1],sellrsithreshold=x[2])
-        RSIBot=Bot("RSI Strategy",RSIstrategy, startingbtc, startingaud)
+        RSIBot=Bot("RSI Strategy",RSIstrategy, startingaud)
         RSIBot.execute_trade( self.df) 
         out["F"] = RSIBot.getaud()*-1
 
-        out["G"] = len(RSIBot.gettradingrecord())-100
+        out["G"] = len(RSIBot.gettradingrecord())-30
         
 class MACDProblem(ElementwiseProblem):
     def __init__(self,df):
@@ -86,12 +92,95 @@ class MACDProblem(ElementwiseProblem):
         self.df=df
 
     def _evaluate(self, x, out, *args, **kwargs):
-        startingbtc=0
+   
         startingaud=100
         MACDstrategy=MACDStrategy(slow=x[0],fast=x[1],sign=x[2],macdthreshold=x[3])
-        MACDBot=Bot("MACD RSI Strategy",MACDstrategy, startingbtc, startingaud)
+        MACDBot=Bot("MACD Strategy",MACDstrategy, startingaud)
         MACDBot.execute_trade( self.df) 
         out["F"] = MACDBot.getaud()*-1
         g1=x[1] - x[0]-1
         g2=len(MACDBot.gettradingrecord())-30
         out["G"] =[ g1,g2]
+        
+        
+        
+class AIMACDRSIProblem(ElementwiseProblem):
+    def __init__(self,df):
+        super().__init__(n_var=7,
+                         n_obj=1,
+                         n_ieq_constr=1,
+                         xl=np.array([-1500, -1500, -1500, -1500, 0, 1,1]),
+                         xu=np.array([1500, 1500, 1500, 1500, 1500, 100, 100]),
+                         vtype=int)
+        self.df=df
+
+    def _evaluate(self, x, out, *args, **kwargs):
+        startingaud=100
+        AIMACDRSIstrategy=AIMACDRSIStrategy(macd_buy_threshold=x[0],macd_sell_threshold=x[1],macdsignal_buy_threshold=x[2],macdsignal_sell_threshold=x[3],macd_diff_threshold=x[4],buyrsithreshold=x[5],sellrsithreshold=x[6])
+        AIMACDRSIBot=Bot("AI MACD RSI Strategy",AIMACDRSIstrategy, startingaud)
+        AIMACDRSIBot.execute_trade( self.df) 
+
+        f1=AIMACDRSIBot.getaud()*-1
+
+      
+        #print(np.array((f1,f2)))
+        out["F"] =[f1]
+        #print(out["F"])
+        g1=x[4] - x[3]-1
+       
+        out["G"] =g1
+        
+class AIProblem(ElementwiseProblem):
+    def __init__(self,df):
+        super().__init__(n_var=4,
+                         n_obj=1,
+                         n_ieq_constr=1,
+                         xl=np.array([0, 0, 0, 0]),
+                         xu=np.array([100, 100, 100, 100]),
+                         vtype=int)
+        self.df=df
+
+    def _evaluate(self, x, out, *args, **kwargs):
+        startingaud=100
+        AIMACDRSIstrategy=AIStrategy(k_threshold=x[0],d_threshold=x[1],rsi_buy_threshold=x[2],rsi_sell_threshold=x[3])
+        AIMACDRSIBot=Bot("AI Strategy",AIMACDRSIstrategy, startingaud)
+        AIMACDRSIBot.execute_trade( self.df) 
+
+        f1=AIMACDRSIBot.getaud()*-1
+
+      
+        #print(np.array((f1,f2)))
+        out["F"] =[f1]
+        #print(out["F"])
+        g1=len(AIMACDRSIBot.gettradingrecord())-3
+       
+        out["G"] =g1
+        
+        
+class AIVotingProblem(ElementwiseProblem):
+    def __init__(self,df):
+        super().__init__(n_var=10,
+                         n_obj=1,
+                         n_ieq_constr=3,
+                         xl=np.array([5, 5, 5, 5, 5, 5,0,0,0,0]),
+                         xu=np.array([95, 95, 95, 95, 95, 95,2,2,2,2]),
+                         vtype=int)
+        self.df=df
+
+    def _evaluate(self, x, out, *args, **kwargs):
+        startingaud=100
+   
+        AIMACDRSIstrategy=AIVotingStrategy(mfi_buy_threshold=x[0],mfi_sell_threshold=x[1],k_buy_threshold=x[2],k_sell_threshold=x[3],rsi_buy_threshold=x[4],rsi_sell_threshold=x[5],kd_w=x[6],k_w=x[7],rsi_w=x[8],mfi_w=x[9])
+        AIMACDRSIBot=Bot("AI Voting Strategy",AIMACDRSIstrategy, startingaud)
+        AIMACDRSIBot.execute_trade(self.df) 
+
+        f1=AIMACDRSIBot.getaud()*-1
+
+      
+        #print(np.array((f1,f2)))
+        out["F"] =[f1]
+        #print(out["F"])
+        g1=x[0]-x[1]-1
+        g2=x[2]-x[3]-1
+        g3=x[4]-x[5]-1
+        out["G"] =[g1,g2,g3]
