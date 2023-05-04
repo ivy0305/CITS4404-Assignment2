@@ -28,19 +28,19 @@ python run_test.py
 ```
 ## Code File Description
 #### Bot.py : 
-•	Calculate and Record data related to Transaction (e.g. Profit, Trading record)
-•	Implement the language of the assignment
-•	Act according to the assign strategy
+1.	Calculate and Record data related to Transaction (e.g. Profit, Trading record)
+2.	Implement the language of the assignment
+3.	Act according to the assign strategy
 #### Strategy.py :
-•	Calculate TA Indicators
-•	Implement the trading logic
-•	Return an action from [hold, buy, sell]
+1.	Calculate TA Indicators
+2.	Implement the trading logic
+3.	Return an action from [hold, buy, sell]
 #### Problem.py:
-•	Define objective function and constrains
-•	Define training Parameters
+1.	Define objective function and constrains
+2.	Define training Parameters
 #### Run_test.py:
-•	The Main file on this application
-•	Initalization
-•	Handle the process of the test
-•	Evaluate preformance
-•	Output a txt file to Output folder
+1.	The Main file on this application
+2.	Initalization
+3.	Handle the process of the test
+4.	Evaluate preformance
+5.	Output a txt file to Output folder
