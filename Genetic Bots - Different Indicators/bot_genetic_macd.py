@@ -7,8 +7,8 @@ from deap import creator, base, tools, algorithms
 
 # Genetic Algorithm parameters
 IND_SIZE = 3
-POP_SIZE = 50
-N_GENERATIONS = 20
+POP_SIZE = 30
+N_GENERATIONS = 5
 MUTATION_RATE = 0.1
 
 # Retrieve the historical data
@@ -53,6 +53,8 @@ def evaluate_bot(data, fast_length, slow_length, signal_length, initial_capital=
     # Sell the remaining BTC holding at the close of the last day
     if bought:
         capital = btc_holding * data.loc[len(data) - 1, 'close'] * (1 - fee_percentage)
+    else:
+        return 0
 
     return capital
 
