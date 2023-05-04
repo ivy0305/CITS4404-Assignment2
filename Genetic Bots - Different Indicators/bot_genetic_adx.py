@@ -9,7 +9,7 @@ warnings.filterwarnings("ignore", message="invalid value encountered in scalar d
 
 # Genetic Algorithm parameters
 IND_SIZE = 2
-POP_SIZE = 10
+POP_SIZE = 30
 N_GENERATIONS = 5
 MUTATION_RATE = 0.2
 
@@ -73,12 +73,13 @@ def evaluate_bot(data, short_window, long_window, initial_capital=100, fee_perce
     # Sell the remaining BTC holding at the close of the last day
     if bought:
         capital = btc_holding * data.loc[len(data) - 1, 'close'] * (1 - fee_percentage)
-
+    else:
+        return 0
+    #print(capital)
     return capital
 
 # ------------------------------------------------------
 # GENETIC ALGORITHM BIT STARTS HERE
-
 def select_parents(population, fitness_values):
     selected_parents = []
     for i in range(2):
@@ -112,7 +113,6 @@ def evaluate_fitness(individual):
     final_capital = evaluate_bot(data, individual[0], individual[1])
     return (final_capital,)
 
-
 # Run the optimization using the genetic algorithm
 toolbox = base.Toolbox()
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
@@ -120,14 +120,14 @@ creator.create("Individual", list, fitness=creator.FitnessMax)
 
 # Define the individuals
 toolbox.register("attr_int", random.randint, 10, 100)
-toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.attr_int, n=2)
+toolbox.register("individual", tools.initCycle, creator.Individual, [toolbox.attr_int]*2)
 
 # Define the population
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
 # Define the fitness function
 toolbox.register("evaluate", evaluate_fitness)
-toolbox.register("mate", tools.cxTwoPoint)
+toolbox.register("mate", tools.cxUniform, indpb = 0.5)
 toolbox.register("mutate", tools.mutUniformInt, low=10, up=100, indpb=MUTATION_RATE)
 toolbox.register("select", tools.selTournament, tournsize=3)
 
@@ -140,7 +140,7 @@ stats.register("min", np.min)
 stats.register("max", np.max)
 
 for gen in range(N_GENERATIONS):
-    offspring = algorithms.varAnd(pop, toolbox, cxpb=0.5, mutpb=0.1)
+    offspring = algorithms.varAnd(pop, toolbox, cxpb=0.5, mutpb=0.2)
     fits = toolbox.map(toolbox.evaluate, offspring)
     for fit, ind in zip(fits, offspring):
         ind.fitness.values = fit
@@ -154,33 +154,6 @@ for gen in range(N_GENERATIONS):
 
 best_params = hof[0]
 best_fitness = evaluate_fitness(best_params)
-
-def main():
-    # Initialize the population
-    pop = toolbox.population(n=50)
-
-    # Run the genetic algorithm for 10 generations
-    for gen in range(10):
-        # Evaluate the fitness of each individual in the population
-        fitnesses = map(toolbox.evaluate, pop)
-        for ind, fit in zip(pop, fitnesses):
-            ind.fitness.values = fit
-
-        # Select the next generation of individuals using tournament selection
-        offspring = toolbox.select(pop, len(pop))
-        offspring = list(map(toolbox.clone, offspring))
-
-        # Apply crossover and mutation to the offspring
-        for child1, child2 in zip(offspring[::2], offspring[1::2]):
-            if random.random() < 0.5:
-                toolbox.mate(child1, child2)
-                del child1.fitness.values
-                del child2.fitness.values
-
-        for mutant in offspring:
-            if random.random() < 0.2:
-                toolbox.mutate(mutant)
-                del mutant.fitness.values
 
 # Print the best parameters and fitness
 print(f"Best parameters: {best_params}")
