@@ -54,7 +54,8 @@ def evaluate_bot(data, short_window, long_window, initial_capital=100, fee_perce
     # Sell the remaining BTC holding at the close of the last day
     if bought:
         capital = btc_holding * data.loc[len(data) - 1, 'close'] * (1 - fee_percentage)
-
+    else:
+        return 0
     return capital
 
 # ------------------------------------------------------
@@ -135,33 +136,6 @@ for gen in range(N_GENERATIONS):
 
 best_params = hof[0]
 best_fitness = evaluate_fitness(best_params)
-
-def main():
-    # Initialize the population
-    pop = toolbox.population(n=50)
-
-    # Run the genetic algorithm for 10 generations
-    for gen in range(10):
-        # Evaluate the fitness of each individual in the population
-        fitnesses = map(toolbox.evaluate, pop)
-        for ind, fit in zip(pop, fitnesses):
-            ind.fitness.values = fit
-
-        # Select the next generation of individuals using tournament selection
-        offspring = toolbox.select(pop, len(pop))
-        offspring = list(map(toolbox.clone, offspring))
-
-        # Apply crossover and mutation to the offspring
-        for child1, child2 in zip(offspring[::2], offspring[1::2]):
-            if random.random() < 0.5:
-                toolbox.mate(child1, child2)
-                del child1.fitness.values
-                del child2.fitness.values
-
-        for mutant in offspring:
-            if random.random() < 0.2:
-                toolbox.mutate(mutant)
-                del mutant.fitness.values
 
 # Print the best parameters and fitness
 print(f"Best parameters: {best_params}")
