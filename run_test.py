@@ -20,12 +20,7 @@ def printrecord(bot):
             write2file(filename,f'\tDate:{datetime.fromtimestamp(i[0]/1000.0)}\tAction:{i[1]}\tPrice:{i[2]}\tAmount(BTC){i[3]}\tCommission(AUD):{i[4]}\n')
         
 
-# Retrieve the historical data
-DATANUMBER=720
 
-DAY=86400000
-MONTH=DAY*30
-BASE=1623456000000+8*MONTH
 kraken=ccxt.kraken()
 kraken.load_markets()
 
@@ -35,10 +30,8 @@ def get_BTCAUDdata(startingbased,nday):
     df=pd.DataFrame(ohlcdata,columns=["timestamp","open","high","low","close","volume"])
     return df
 
-#df=addIndicators(df)
-#print(df)
-# *** Simulations *** #
-def trainAIVotingProblem(train_data):
+
+def trainVotingProblem(train_data):
     Problem=AIVotingProblem(train_data)
     #algorithm=GA(pop_size=100,sampling=IntegerRandomSampling())
     algorithm = PSO(adaptive=True, pop_size=100, sampling=IntegerRandomSampling(),repair=RoundingRepair(),  pertube_best=False)
@@ -50,43 +43,6 @@ def trainAIVotingProblem(train_data):
     
     return res.X,res.F[0]
 
-def trainAIProblem(train_data):
-    Problem=AIProblem(train_data)
-    #algorithm=GA(pop_size=100,sampling=IntegerRandomSampling())
-    algorithm = PSO(adaptive=True, pop_size=100, sampling=IntegerRandomSampling(),repair=RoundingRepair(),  pertube_best=False)
-    res = minimize(Problem,
-                algorithm,
-                seed=1,
-                verbose=False)
-    print("Best solution found: \nX = %s\nF = $%s\nCV = %s\nG=%s\n" % (res.X, -1 * res.F[0], res.CV[0],res.G[0]))
-    
-    return res.X
-
-    
-def testMACDRSIProblem(startingbtc, startingaud,train_data,test_data):
-    Problem=MACDRSIProblem(train_data)
-    #algorithm=GA(pop_size=100,sampling=IntegerRandomSampling())
-    algorithm = PSO(adaptive=True, pop_size=100, sampling=IntegerRandomSampling(),repair=RoundingRepair(),  pertube_best=False)
-    res = minimize(Problem,
-                algorithm,
-                seed=1,
-                verbose=False)
-    print("Best solution found: \nX = %s\nF = $%s\nCV = %s\nG=%s\n" % (res.X, -1 * res.F[0], res.CV[0],res.G[0]))
-    
-    return res.X
-    
-def trainAIMACDRSIProblem(train_data):
-    Problem=AIMACDRSIProblem(train_data)
-    #algorithm=GA(pop_size=100,sampling=IntegerRandomSampling())
-    algorithm = PSO(adaptive=True, pop_size=100, sampling=IntegerRandomSampling(),repair=RoundingRepair(),  pertube_best=False)
-    res = minimize(Problem,
-                algorithm,
-                seed=1,
-                verbose=True)
-    print("Best solution found: \nX = %s\nF = $%s\nCV = %s\nG=%s\n" % (res.X, -1 * res.F[0], res.CV[0],res.G[0]))
-    
-    return res.X
-    
 
 
 def testbot(bot,test_data):
@@ -111,7 +67,14 @@ def write2file(exp_name,text):
         file.write(text)   
         
 if __name__ == "__main__": 
-  
+  # Retrieve the historical data
+ 
+    BASE=1623456000000 #Bullish market
+    #BASE=1623456000000+4*MONTH #Bearish market
+    #BASE=1623456000000+7*MONTH #Mix market
+    DAY=86400000
+    MONTH=DAY*30
+   
     botname="Voting Strategy"
     filename=datetime.today().strftime('%Y%m%d_%H%M%S')+"_"+botname
     tradingMarket="BTC/AUD"
@@ -136,7 +99,7 @@ if __name__ == "__main__":
         #print(train_data)
       
         #print(test_data)
-        best_param,train_fitness=trainAIVotingProblem(train_data)
+        best_param,train_fitness=trainVotingProblem(train_data)
         write2file(filename,f'Particle Swarm Optimization:\n')
         write2file(filename,f'Best Parameter:\n\tmfi_buy_threshold=\t{best_param[0]}\n\tmfi_sell_threshold=\t{best_param[1]}\n\tk_buy_threshold=\t{best_param[2]}\n\tk_sell_threshold=\t{best_param[3]}\n\trsi_buy_threshold=\t{best_param[4]}\n\trsi_sell_threshold=\t{best_param[5]}\n\tkd_w=\t{best_param[6]}\n\tk_w=\t{best_param[7]}\n\trsi_w=\t{best_param[8]}\n\tmfi_w=\t{best_param[9]}\n')
         write2file(filename,f'Training_Fitness:{-1*train_fitness}\n\n')
