@@ -12,7 +12,7 @@ from ta.momentum import RSIIndicator
 
   
 
-class AIVotingProblem(ElementwiseProblem):
+class VotingProblem(ElementwiseProblem):
     def __init__(self,df):
         super().__init__(n_var=10,
                          n_obj=1,
@@ -25,11 +25,11 @@ class AIVotingProblem(ElementwiseProblem):
     def _evaluate(self, x, out, *args, **kwargs):
         startingaud=100
    
-        AIMACDRSIstrategy=AIVotingStrategy(mfi_buy_threshold=x[0],mfi_sell_threshold=x[1],k_buy_threshold=x[2],k_sell_threshold=x[3],rsi_buy_threshold=x[4],rsi_sell_threshold=x[5],kd_w=x[6],k_w=x[7],rsi_w=x[8],mfi_w=x[9])
-        AIMACDRSIBot=Bot("AI Voting Strategy",AIMACDRSIstrategy, startingaud)
-        AIMACDRSIBot.execute_trade(self.df) 
+        Votingstrategy=VotingStrategy(mfi_buy_threshold=x[0],mfi_sell_threshold=x[1],k_buy_threshold=x[2],k_sell_threshold=x[3],rsi_buy_threshold=x[4],rsi_sell_threshold=x[5],kd_w=x[6],k_w=x[7],rsi_w=x[8],mfi_w=x[9])
+        VotingBot=Bot("AI Voting Strategy",Votingstrategy, startingaud)
+        VotingBot.execute_trade(self.df) 
 
-        f1=AIMACDRSIBot.getaud()*-1
+        f1=VotingBot.getaud()*-1
 
       
         #print(np.array((f1,f2)))

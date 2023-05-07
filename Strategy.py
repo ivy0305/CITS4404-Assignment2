@@ -25,7 +25,7 @@ class BuyandholdStrategy(Strategy):
         #done
 
               
-class AIVotingStrategy(Strategy):
+class VotingStrategy(Strategy):
     def __init__(self, mfi_buy_threshold,mfi_sell_threshold,k_buy_threshold,k_sell_threshold,rsi_buy_threshold,rsi_sell_threshold,kd_w,k_w,rsi_w,mfi_w):
         self.signal="hold"
         self.mfi_buy_threshold=mfi_buy_threshold
