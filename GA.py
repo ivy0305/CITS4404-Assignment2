@@ -4,7 +4,7 @@ from Bot import *
 from Strategy import *
 
 
-np.set_printoptions(suppress=True) #array不顯示科學記號
+np.set_printoptions(suppress=True) 
 
 def _fitness(individual,df):
     startingaud=100
@@ -68,7 +68,7 @@ def trainGA(df, parameter_size = 10,n_individuals = 100,cross_rate = 0.5,mutatio
             child = mutate(child,DNA_SIZE,MUTATION_RATE)
             parent[:] = child       # parent is replaced by its child
             
-        pop = select(pop, fitness,POP_SIZE) #從pop中挑適應值好的個體 取代pop
+        pop = select(pop, fitness,POP_SIZE) 
         
         fitness = np.array([_fitness(individual,df)for individual in pop])
         
