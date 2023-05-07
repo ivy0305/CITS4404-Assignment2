@@ -31,7 +31,8 @@ def get_BTCAUDdata(startingbased,nday):
     return df
 
 
-def trainVotingProblem(train_data):
+def trainPSOVotingProblem(train_data):
+    write2file(filename,f'Particle Swarm Optimization:\n')
     Problem=AIVotingProblem(train_data)
     #algorithm=GA(pop_size=100,sampling=IntegerRandomSampling())
     algorithm = PSO(adaptive=True, pop_size=100, sampling=IntegerRandomSampling(),repair=RoundingRepair(),  pertube_best=False)
@@ -43,7 +44,18 @@ def trainVotingProblem(train_data):
     
     return res.X,res.F[0]
 
-
+def trainGAVotingProblem(train_data):
+    write2file(filename,f'Genetic Algorithm Optimization:\n')
+    Problem=AIVotingProblem(train_data)
+    algorithm=GA(pop_size=100,sampling=IntegerRandomSampling())
+    #algorithm = PSO(adaptive=True, pop_size=100, sampling=IntegerRandomSampling(),repair=RoundingRepair(),  pertube_best=False)
+    res = minimize(Problem,
+                algorithm,
+                seed=1,
+                verbose=True)
+    print("Best solution found: \nX = %s\nF = $%s\nCV = %s\nG=%s\n" % (res.X, -1 * res.F[0], res.CV[0],res.G[0]))
+    
+    return res.X,res.F[0]
 
 def testbot(bot,test_data):
     print("*"*50,f'{bot.getname():^30}',"*"*50)
@@ -74,11 +86,14 @@ if __name__ == "__main__":
     #BASE=1623456000000+7*MONTH #Mix market
     DAY=86400000
     MONTH=DAY*30
-   
+    predaynumber=14
+    trainingdatasize=30
+    datasize=30
+    
     botname="Voting Strategy"
     filename=datetime.today().strftime('%Y%m%d_%H%M%S')+"_"+botname
     tradingMarket="BTC/AUD"
-    testmonthnumber=3
+    testmonthnumber=12
     Algorithmtotalprofit=0
     BuyandHoldtotalprofit=0
     startingaud=100
@@ -91,29 +106,28 @@ if __name__ == "__main__":
         print(i+1,"/",testmonthnumber)
         print("="*160)
         write2file(filename,f"Iteration:\t {i+1} / {testmonthnumber}\n\n")
-        train_data=get_BTCAUDdata(BASE+MONTH*i-14*DAY,30+14)
-        test_data=get_BTCAUDdata(BASE+(MONTH*(i+1))-14*DAY,30+14)
+        train_data=get_BTCAUDdata(BASE+MONTH*i-predaynumber*DAY,trainingdatasize+predaynumber)
+        test_data=get_BTCAUDdata(BASE+(MONTH*(i+1))-predaynumber*DAY,datasize+predaynumber)
         
         write2file(filename,f'Training Data:\n\tFrom:\t { datetime.fromtimestamp(train_data.loc[0,"timestamp"]/1000.0)}\tTo:\t { datetime.fromtimestamp(train_data.loc[train_data.shape[0]-1,"timestamp"]/1000.0)}\t Size:\t{train_data.shape} \n')
         write2file(filename,f'Testing Data:\n\tFrom:\t { datetime.fromtimestamp(test_data.loc[0,"timestamp"]/1000.0)}\tTo:\t { datetime.fromtimestamp(test_data.loc[test_data.shape[0]-1,"timestamp"]/1000.0)}\t Size:\t{test_data.shape} \n\n')
         #print(train_data)
       
         #print(test_data)
-        best_param,train_fitness=trainVotingProblem(train_data)
-        write2file(filename,f'Particle Swarm Optimization:\n')
+        best_param,train_fitness=trainGAVotingProblem(train_data)
         write2file(filename,f'Best Parameter:\n\tmfi_buy_threshold=\t{best_param[0]}\n\tmfi_sell_threshold=\t{best_param[1]}\n\tk_buy_threshold=\t{best_param[2]}\n\tk_sell_threshold=\t{best_param[3]}\n\trsi_buy_threshold=\t{best_param[4]}\n\trsi_sell_threshold=\t{best_param[5]}\n\tkd_w=\t{best_param[6]}\n\tk_w=\t{best_param[7]}\n\trsi_w=\t{best_param[8]}\n\tmfi_w=\t{best_param[9]}\n')
         write2file(filename,f'Training_Fitness:{-1*train_fitness}\n\n')
      
         AIvotingstrategy=AIVotingStrategy(mfi_buy_threshold=best_param[0],mfi_sell_threshold=best_param[1],k_buy_threshold=best_param[2],k_sell_threshold=best_param[3],rsi_buy_threshold=best_param[4],rsi_sell_threshold=best_param[5],kd_w=best_param[6],k_w=best_param[7],rsi_w=best_param[8],mfi_w=best_param[9])
         AIvotingbot=Bot(botname,AIvotingstrategy, startingaud)
         Algorithmtotalprofit+= testbot(AIvotingbot,test_data)
-        if(AIvotingbot.score()>0):
-            wincount+=1
+        
         write2file(filename,f'\n')
         BHStrategy= BuyandholdStrategy()
         BHBot=Bot("Buy and Hold Strategy",BHStrategy, bhstartingaud)
         BuyandHoldtotalprofit+=testbot(BHBot,test_data)
-        
+        if(AIvotingbot.score()>BHBot.score()):
+            wincount+=1
         write2file(filename,f'\n\n{"*"*180}\n\n')
 
      
