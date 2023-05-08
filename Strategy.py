@@ -1,10 +1,8 @@
 import pandas as pd
-import datetime
-from ta.volume import VolumeWeightedAveragePrice,MFIIndicator
-from ta.volatility import BollingerBands, AverageTrueRange
-from ta.trend import MACD,SMAIndicator,EMAIndicator
-from ta.momentum import RSIIndicator,StochasticOscillator
-import math
+from ta.volume import MFIIndicator
+from ta.trend import EMAIndicator
+from ta.momentum import StochasticOscillator
+
 class Strategy:
 
     def __init__(self):
@@ -19,73 +17,65 @@ class BuyandholdStrategy(Strategy):
         pass
     def decide(self, data,t):
         action="hold"
-        if(t==1):
+        if(t<14):
+            return action
+        if(t==14):
             action="buy"
         return action
         #done
 
               
 class VotingStrategy(Strategy):
-    def __init__(self, mfi_buy_threshold,mfi_sell_threshold,k_buy_threshold,k_sell_threshold,rsi_buy_threshold,rsi_sell_threshold,kd_w,k_w,rsi_w,mfi_w):
+    def __init__(self, mfi_buy_threshold_divergence,mfi_sell_threshold_divergence,d_buy_threshold_divergence,d_sell_threshold_divergence,d_w,kd_w,ema_w,mfi_w):
         self.signal="hold"
-        self.mfi_buy_threshold=mfi_buy_threshold
-        self.mfi_sell_threshold=mfi_sell_threshold
-        self.k_buy_threshold=k_buy_threshold
-        self.k_sell_threshold=k_sell_threshold
-        self.rsi_buy_threshold=rsi_buy_threshold
-        self.rsi_sell_threshold=rsi_sell_threshold
+        self.mfi_buy_threshold_divergence=mfi_buy_threshold_divergence
+        self.mfi_sell_threshold_divergence=mfi_sell_threshold_divergence
+        self.d_buy_threshold_divergence=d_buy_threshold_divergence
+        self.d_sell_threshold_divergence=d_sell_threshold_divergence
+        self.d_w=d_w
         self.kd_w=kd_w
-        self.k_w=k_w
-        self.rsi_w=rsi_w
+        self.ema_w=ema_w
         self.mfi_w=mfi_w
     def decide(self, data,t):
         action={"hold":0,"buy":0,"sell":0}
        
-        mfind=MFIIndicator(data['high'],data['low'],data['close'],data['volume'])
-        mfi=mfind.money_flow_index()[t-1]
-        stochasticOscillator=StochasticOscillator(data['high'],data['low'],data['close'],window=9)
+        mfind=MFIIndicator(data['high'],data['low'],data['close'],data['volume'],window=14)
+        mfi=mfind.money_flow_index()
+        stochasticOscillator=StochasticOscillator(data['high'],data['low'],data['close'],window=14)
         k=stochasticOscillator.stoch()
         d=stochasticOscillator.stoch_signal()
-        RSI_indicator=RSIIndicator(data["close"],window=6)
-        rsi=RSI_indicator.rsi()[t-1]
-        EMA_indicator=EMAIndicator(data['close'],window=5)
-        ema=EMA_indicator.ema_indicator()[t-1]
-        if(pd.isna(k[t-1]) or pd.isna(d[t-1]) or pd.isna(mfi) or pd.isna(rsi)):
+       
+        EMA_indicator=EMAIndicator(data['low'],window=14)
+        ema=EMA_indicator.ema_indicator()[t]
+        if(pd.isna(k[t]) or pd.isna(d[t]) or pd.isna(mfi[t]) or pd.isna(ema)):
             return action
-        
-        if k[t-1] > d[t-1]and k[t-2] < d[t-2] and k[t-1] <30:
-            # kd crossed above signal line - buy signal
+ 
+        if k[t] > d[t]:
             action["buy"]+=self.kd_w
-        if k[t-1] < d[t-1] and k[t-2] > d[t-2] and k[t-1] >70:
-            # kd crossed below signal line - sell signal
-            action["sell"]+=self.kd_w
-            
-        if( k[t-1]<self.k_buy_threshold ):
-            action["buy"]+=self.k_w
-        elif(k[t-1]>self.k_sell_threshold ):
-            action["sell"]+=self.k_w
         else:
-            action["hold"]+=self.k_w
-        
-        if( rsi<self.rsi_buy_threshold ):
-            action["buy"]+=self.rsi_w
-        elif(rsi>self.rsi_sell_threshold ):
-            action["sell"]+=self.rsi_w
+            action["sell"]+=self.kd_w 
+     
+        if( d[t]>30+self.d_buy_threshold_divergence and d[t-1]<30+self.d_buy_threshold_divergence):
+            action["buy"]+=self.d_w
+        elif(d[t]<70+self.d_sell_threshold_divergence and d[t-1]>70+self.d_sell_threshold_divergence):
+            action["sell"]+=self.d_w
         else:
-            action["hold"]+=self.rsi_w
+            action["hold"]+=self.d_w
             
-        if( mfi<self.mfi_buy_threshold ):
+        if( mfi[t-1]<20+self.mfi_buy_threshold_divergence and mfi[t]>20+self.mfi_buy_threshold_divergence):
             action["buy"]+=self.mfi_w
-        elif(mfi>self.mfi_sell_threshold ):
+        elif(mfi[t-1]>80+self.mfi_sell_threshold_divergence and mfi[t]<80+self.mfi_sell_threshold_divergence):
             action["sell"]+=self.mfi_w
         else:
             action["hold"]+=self.mfi_w
-        '''
-        if(data.loc[t-1, 'close']<ema):
-            action["buy"]+=0.5
+        
+        if(data.loc[t, 'close']<ema):
+            action["sell"]+=self.ema_w
         else:
-            action["sell"]+=0.5
-        '''    
+            action["buy"]+=self.ema_w
+        
+        if(t==len(data)-1):
+            action["hold"]+=20
         
         votedAction = max(action, key=lambda k: action[k])
         return votedAction

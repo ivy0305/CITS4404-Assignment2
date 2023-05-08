@@ -6,9 +6,10 @@ from Strategy import *
 import pandas as pd
 
 from pymoo.algorithms.soo.nonconvex.ga import GA
-from ta.volatility import BollingerBands, AverageTrueRange
-from ta.trend import MACD,SMAIndicator
-from ta.momentum import RSIIndicator,StochasticOscillator
+from pymoo.algorithms.soo.nonconvex.pso import PSO
+from pymoo.operators.sampling.rnd import IntegerRandomSampling
+from pymoo.optimize import minimize
+from pymoo.operators.repair.rounding import RoundingRepair
 import datetime 
 from GA import *
 from FATRLS import *
@@ -41,17 +42,17 @@ def trainPSOVotingProblem(train_data):
                 algorithm,
                 seed=1,
                 verbose=True)
-    print("Best solution found: \nX = %s\nF = $%s\nCV = %s\nG=%s\n" % (res.X, -1 * res.F[0], res.CV[0],res.G[0]))
+    print("Best solution found: \nX = %s\nF = $%s\n" % (res.X, -1 * res.F[0]))
     
     return res.X,res.F[0]
 def trainGAVotingProblem(train_data):
     write2file(filename,f'Genetic Algorithm Optimization:\n')
-    x,fitness=trainGA(train_data, parameter_size = 10,n_individuals = 100,cross_rate = 0.5,mutation_rate = 0.2,n_generation= 50)
+    x,fitness=trainGA(train_data, parameter_size = 8,n_individuals = 100,cross_rate = 0.5,mutation_rate = 0.2,n_generation= 50)
     print("Best solution found: \nX = %s\nF = $%s\n" % (x,  -1*fitness))
     return x, fitness
 
 def trainFATRLSVotingProblem(train_data):
-    write2file(filename,f'FATRL Algorithm Optimization:\n')
+    write2file(filename,f'FATRLS Algorithm Optimization:\n')
     x,fitness=trainFATRLS(train_data,max_iterations=50,beta=1.2,id=train_data.shape[0]//2,tabu_size=train_data.shape[0])
     print("Best solution found: \nX = %s\nF = $%s\n" % (x, fitness))
     return x, fitness
@@ -93,7 +94,7 @@ if __name__ == "__main__":
     
 
     botname="Voting Strategy"
-    optimizer="FATRLS"
+    optimizer="GA"
     filename=datetime.datetime.today().strftime('%Y%m%d_%H%M%S')+"_"+botname
     tradingMarket="BTC/AUD"
     testmonthnumber=12
@@ -124,10 +125,13 @@ if __name__ == "__main__":
             best_param,train_fitness=trainGAVotingProblem(train_data)
         elif(optimizer=="FATRLS"):
             best_param,train_fitness=trainFATRLSVotingProblem(train_data)
-        write2file(filename,f'Best Parameter:\n\tmfi_buy_threshold=\t{best_param[0]}\n\tmfi_sell_threshold=\t{best_param[1]}\n\tk_buy_threshold=\t{best_param[2]}\n\tk_sell_threshold=\t{best_param[3]}\n\trsi_buy_threshold=\t{best_param[4]}\n\trsi_sell_threshold=\t{best_param[5]}\n\tkd_w=\t{best_param[6]}\n\tk_w=\t{best_param[7]}\n\trsi_w=\t{best_param[8]}\n\tmfi_w=\t{best_param[9]}\n')
+            train_fitness=train_fitness*-1
+            
+   
+        write2file(filename,f'Best Parameter:\n\tmfi_buy_threshold_divergence=\t{best_param[0]}\n\tmfi_sell_threshold_divergence=\t{best_param[1]}\n\td_buy_threshold_divergence=\t{best_param[2]}\n\td_sell_threshold_divergence=\t{best_param[3]}\n\td_w=\t{best_param[4]}\n\tkd_w=\t{best_param[5]}\n\tema_w=\t{best_param[6]}\n\tmfi_w=\t{best_param[7]}\n')
         write2file(filename,f'Training_Fitness:{-1*train_fitness}\n\n')
      
-        votingstrategy=VotingStrategy(mfi_buy_threshold=best_param[0],mfi_sell_threshold=best_param[1],k_buy_threshold=best_param[2],k_sell_threshold=best_param[3],rsi_buy_threshold=best_param[4],rsi_sell_threshold=best_param[5],kd_w=best_param[6],k_w=best_param[7],rsi_w=best_param[8],mfi_w=best_param[9])
+        votingstrategy=VotingStrategy(mfi_buy_threshold_divergence=best_param[0],mfi_sell_threshold_divergence=best_param[1],d_buy_threshold_divergence=best_param[2],d_sell_threshold_divergence=best_param[3],d_w=best_param[4],kd_w=best_param[5],ema_w=best_param[6],mfi_w=best_param[7])
         votingbot=Bot(botname,votingstrategy, startingaud)
         Algorithmtotalprofit+= testbot(votingbot,test_data)
         

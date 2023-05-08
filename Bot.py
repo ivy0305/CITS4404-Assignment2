@@ -1,7 +1,5 @@
 from Strategy import *
-from ta.volatility import BollingerBands, AverageTrueRange
-from ta.trend import MACD,SMAIndicator
-from ta.momentum import RSIIndicator
+
 class Bot:
     def __init__(self, name,strategy, aud):
         self.btc = 0

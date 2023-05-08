@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 from Bot import *
 from Strategy import *
@@ -8,8 +7,7 @@ np.set_printoptions(suppress=True)
 
 def _fitness(individual,df):
     startingaud=100
-   
-    Votingstrategy=VotingStrategy(mfi_buy_threshold=individual[0],mfi_sell_threshold=individual[1],k_buy_threshold=individual[2],k_sell_threshold=individual[3],rsi_buy_threshold=individual[4],rsi_sell_threshold=individual[5],kd_w=individual[6],k_w=individual[7],rsi_w=individual[8],mfi_w=individual[9])
+    Votingstrategy=VotingStrategy(mfi_buy_threshold_divergence=individual[0],mfi_sell_threshold_divergence=individual[1],d_buy_threshold_divergence=individual[2],d_sell_threshold_divergence=individual[3],d_w=individual[4],kd_w=individual[5],ema_w=individual[6],mfi_w=individual[7])
     VotingBot=Bot("AI Voting Strategy",Votingstrategy, startingaud)
     VotingBot.execute_trade(df) 
 
@@ -36,25 +34,27 @@ def crossover(parent, pop,DNA_SIZE,CROSS_RATE,POP_SIZE):
 def mutate(parent,DNA_SIZE,MUTATION_RATE):
     for point in range(DNA_SIZE):
         if np.random.rand() < MUTATION_RATE :
-            if point < 5:
-                parent[point] = round(np.random.uniform(0,100),0)
+            if point < 4:
+                parent[point] = round(np.random.uniform(-15,15),0)
+            elif(point==6):
+                parent[point] = round(np.random.uniform(1,3),2)
             else:
-                parent[point] = round(np.random.uniform(0,2),2)
+                parent[point] = round(np.random.uniform(1,5),2)
     return parent
 
-def trainGA(df, parameter_size = 10,n_individuals = 100,cross_rate = 0.5,mutation_rate = 0.2,n_generation= 50):
+def trainGA(df, parameter_size = 8,n_individuals = 100,cross_rate = 0.5,mutation_rate = 0.2,n_generation= 50):
     DNA_SIZE = parameter_size            # DNA length
     POP_SIZE = n_individuals      # population size
     CROSS_RATE = cross_rate       # mating probability (DNA crossover)
     MUTATION_RATE = mutation_rate   # mutation probability
     N_GENERATIONS = n_generation
 
-    pop = np.random.uniform(5,95,(POP_SIZE,DNA_SIZE)).round(0)
-    pop[:,5] = np.random.uniform(0,2,POP_SIZE).round(2)
-    pop[:,6] = np.random.uniform(0,2,POP_SIZE).round(2)
-    pop[:,7] = np.random.uniform(0,2,POP_SIZE).round(2)
-    pop[:,8] = np.random.uniform(0,2,POP_SIZE).round(2)
-    pop[:,9] = np.random.uniform(0,2,POP_SIZE).round(2)
+    pop = np.random.uniform(-15,15,(POP_SIZE,DNA_SIZE)).round(0)
+    pop[:,4] = np.random.uniform(2,5,POP_SIZE).round(2)
+    pop[:,5] = np.random.uniform(1,5,POP_SIZE).round(2)
+    pop[:,6] = np.random.uniform(1,3,POP_SIZE).round(2)
+    pop[:,7] = np.random.uniform(1,5,POP_SIZE).round(2)
+
 
     
     fitness = np.array([_fitness(individual,df)for individual in pop])
