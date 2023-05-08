@@ -1,35 +1,32 @@
 import random
-import ccxt
 import numpy as np
 from Bot import *
 from Strategy import *
-def gettrainingdata():
-    kraken=ccxt.kraken()
-    kraken.load_markets()   
-    ohlcdata=kraken.fetch_ohlcv("BTC/AUD",since=1620864000000,timeframe="1d",limit=60) #Since 1620864000000 to 1629417600000 earlist data
-    df=pd.DataFrame(ohlcdata,columns=["timestamp","open","high","low","close","volume"])
-    return df
+
 def objective_function(df,x):
     startingaud=100
-    Votingstrategy=VotingStrategy(mfi_buy_threshold=x[0],mfi_sell_threshold=x[1],k_buy_threshold=x[2],k_sell_threshold=x[3],rsi_buy_threshold=x[4],rsi_sell_threshold=x[5],kd_w=x[6],k_w=x[7],rsi_w=x[8],mfi_w=x[9])
+    Votingstrategy=VotingStrategy(mfi_buy_threshold_divergence=x[0],mfi_sell_threshold_divergence=x[1],d_buy_threshold_divergence=x[2],d_sell_threshold_divergence=x[3],d_w=x[4],kd_w=x[5],ema_w=x[6],mfi_w=x[7])
     bot=Bot("AI Voting Strategy",Votingstrategy, startingaud)
     bot.execute_trade(df) 
     return bot.getaud()
 
 def generate_initial_solution():
     # Generate an initial solution randomly
-    list_length = 10
+    list_length = 8
     # Initialize an empty list
     random_numbers = []
 
     # Generate random numbers and add them to the list
     for i in range(list_length):
-        
-        if(i>5):
-            random_number = random.uniform(0, 2)
-            random_numbers.append(round(random_number,2))
+      
+        if(i<4):
+            random_number = random.uniform(-15,15)
+            random_numbers.append(int(random_number))
+        elif(i==6):
+            random_number = random.uniform(1,3)
+            random_numbers.append(int(random_number))
         else:
-            random_number = random.uniform(5, 95)
+            random_number = random.uniform(1,5)
             random_numbers.append(int(random_number))
      
 
@@ -39,18 +36,25 @@ def perturb_solution(x, strength):
     # Perturb the solution by adding or subtracting a random value
     newsolution=[]  
     for i in range(len(x)):
-        if(i>5):
+        if(i>3):
             y = strength * 0.1 *random.uniform(-1, 1)
-            if(x[i]+y<1):
+            if(x[i]+y<0):
                 y = strength * 0.1 *random.uniform(0, 1)
-            if(x[i]+y>2):
+            if(x[i]+y>5):
+                y = strength * 0.1 *random.uniform(-1, 0)
+            newsolution.append(round(x[i]+y,2))
+        elif(i==6):
+            y = strength * 0.1 *random.uniform(-1, 1)
+            if(x[i]+y<0):
+                y = strength * 0.1 *random.uniform(0, 1)
+            if(x[i]+y>3):
                 y = strength * 0.1 *random.uniform(-1, 0)
             newsolution.append(round(x[i]+y,2))
         else:
             y = strength * random.uniform(-1, 1)
-            if(x[i]+y<5):
+            if(x[i]+y<-15):
                 y = strength *random.uniform(0, 1)
-            if(x[i]+y>95):
+            if(x[i]+y>15):
                 y = strength *random.uniform(-1, 0)
                 
             newsolution.append(int(x[i]+y))
