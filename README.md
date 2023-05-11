@@ -21,5 +21,5 @@
    ```
    python3 bot.py
    python3 bot_gabe.py
-   python3 bot_daivik.py
+   python3 btc_daivik.py
    ```
