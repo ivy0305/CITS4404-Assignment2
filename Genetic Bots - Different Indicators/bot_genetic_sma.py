@@ -8,7 +8,7 @@ from deap import creator, base, tools, algorithms
 # Genetic Algorithm parameters
 IND_SIZE = 2
 POP_SIZE = 10
-N_GENERATIONS = 5
+N_GENERATIONS = 5 # TO-DO - Can try with 10-12 Generations to gauge results
 MUTATION_RATE = 0.1
 
 # Retrieve the historical data
