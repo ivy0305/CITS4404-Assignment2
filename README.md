@@ -17,7 +17,9 @@
    pip install -r requirements.txt
    ```
 
-3. Run the bot
+3. Run any of the bots
    ```
    python3 bot.py
+   python3 bot_gabe.py
+   python3 bot_daivik.py
    ```
