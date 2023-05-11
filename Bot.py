@@ -90,4 +90,4 @@ class Bot:
     def score(self):
         print("AUD:",self.aud,"BTC:",self.btc)
        
-        return self.getaud()-self.startingaud/self.startingaud*100  
+        return ((self.getaud()-self.startingaud)/(self.startingaud*100))  
