@@ -32,6 +32,7 @@ python run_test.py
 2.	Implement the language of the assignment
 3.	Act according to the assign strategy
 #### Strategy.py :
+Strategies Used - Particle Swarm Optimisation, Fast Local Search Optimisation
 1.	Calculate TA Indicators
 2.	Implement the trading logic
 3.	Return an action from [hold, buy, sell]
