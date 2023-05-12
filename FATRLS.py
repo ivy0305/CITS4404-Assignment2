@@ -101,7 +101,7 @@ def run_tabu_search(df,max_iterations,beta,id, tabu_size):
     return best_solution, best_fitness
 
 def trainFATRLS(df,max_iterations,beta,id,tabu_size):
-    random.seed(23)
+    random.seed(176)
     best_fitness=0
     best_solution=[]
   

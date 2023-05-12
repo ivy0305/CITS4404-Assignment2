@@ -53,7 +53,7 @@ def trainGAVotingProblem(train_data):
 
 def trainFATRLSVotingProblem(train_data):
     write2file(filename,f'FATRLS Algorithm Optimization:\n')
-    x,fitness=trainFATRLS(train_data,max_iterations=50,beta=1.2,id=train_data.shape[0]//2,tabu_size=train_data.shape[0])
+    x,fitness=trainFATRLS(train_data,max_iterations=50,beta=1.2,id=15,tabu_size=train_data.shape[0])
     print("Best solution found: \nX = %s\nF = $%s\n" % (x, fitness))
     return x, fitness
 
@@ -82,19 +82,19 @@ if __name__ == "__main__":
   # Retrieve the historical data
     kraken=ccxt.kraken()
     kraken.load_markets()
-    
-    BASE=1623456000000 #Bullish market
-    #BASE=1623456000000+4*MONTH #Bearish market
-    #BASE=1623456000000+7*MONTH #Mix market
     DAY=86400000
     MONTH=DAY*30
+    BASE=1623456000000#Bullish market
+    #BASE=1623456000000+4*MONTH #Bearish market
+    #BASE=1623456000000+7*MONTH #Mix market
+   
     predaynumber=14
     trainingdatasize=30
     datasize=30
     
 
     botname="Voting Strategy"
-    optimizer="GA"
+    optimizer="PSO"
     filename=datetime.datetime.today().strftime('%Y%m%d_%H%M%S')+"_"+botname
     tradingMarket="BTC/AUD"
     testmonthnumber=12
