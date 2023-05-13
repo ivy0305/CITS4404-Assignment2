@@ -42,3 +42,7 @@ Strategies Used - Particle Swarm Optimisation, Fast Local Search Optimisation
 3.	Handle the process of the test
 4.	Evaluate preformance
 5.	Output a txt file to Output folder
+#### FATRLS.py:
+1.  Implement FATRLS algorithm
+#### GA.py:
+1.  Implement GA algorithm
