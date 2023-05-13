@@ -94,7 +94,7 @@ if __name__ == "__main__":
     
 
     botname="Voting Strategy"
-    optimizer="PSO"
+    optimizer="GA"
     filename=datetime.datetime.today().strftime('%Y%m%d_%H%M%S')+"_"+botname
     tradingMarket="BTC/AUD"
     testmonthnumber=12
@@ -157,10 +157,6 @@ if __name__ == "__main__":
     write2file(filename,f'Total Win Rate:\t{wincount}/{testmonthnumber}\n')
     write2file(filename,f'Total Net Profit:\t{Algorithmtotalprofit-startingaud*testmonthnumber} AUD\n')
     write2file(filename,f'Buy and Hold Total Profit:\t{BuyandHoldtotalprofit-bhstartingaud*testmonthnumber} AUD\n')
-    #testBollingerBandRSIProblem(df,startingbtc, startingaud,train_data,test_data)
-    #testMACDRSIProblem(df,startingbtc, startingaud,train_data,test_data)
-    #testRSIProblem(df,startingbtc, startingaud,train_data,test_data)
-    #testMACDProblem(df,startingbtc, startingaud,train_data,test_data)
 
  
 
@@ -168,34 +164,3 @@ if __name__ == "__main__":
     
    
     
-
-'''
-# Simulates a defined number of days of trade simulations with given parameters and starting cash.
-startingbtc=0
-startingaud=100
-
-BHStrategy= BuyandholdStrategy()
-#PPstrategy= PPStrategy()
-#BRSIstrategy= BollingerBandRSIStrategy()
-#RSIstrategy= RSIStrategy()
-#MACDstrategy= MACDStrategy()
-MACDRSIstrategy=MACDRSIStrategy(slow=26,fast=12,sign=8,rsiwindow=14,buythreshold=40,sellthreshold=60)
-#Votestrategy= VotingStrategy([MACDstrategy,RSIstrategy,PPstrategy])
-BHBot=Bot("Buy and hold Strategy",BHStrategy, startingbtc, startingaud)
-#PPBot=Bot("PP Support and Resistance Strategy",PPstrategy, startingbtc, startingaud)
-#BRSIBot=Bot("BollingerBand RSI Strategy",BRSIstrategy, startingbtc, startingaud)
-#RSIBot=Bot("RSI Strategy",RSIstrategy, startingbtc, startingaud)
-#VoteBot=Bot("Voting Strategy",Votestrategy, startingbtc, startingaud)
-#MACDBot=Bot("MACD Strategy",MACDstrategy, startingbtc, startingaud)
-MACDRSIBot=Bot("MACD RSI Strategy",MACDRSIstrategy, startingbtc, startingaud)
-TestBots=[BHBot,MACDRSIBot]
-for bot in TestBots:
-    print("*"*50,f'{bot.getname():^30}',"*"*50)
-    bot.execute_trade(df) 
-  
-    print("Result:",round(bot.score(),3),"%")
-    print("Total Trade Made:",len(bot.gettradingrecord())," times")
-    printrecord(bot)
-
-
-'''
