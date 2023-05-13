@@ -1,7 +1,7 @@
 import numpy as np
 from Bot import *
 from Strategy import *
-
+import random
 
 np.set_printoptions(suppress=True) 
 
@@ -48,7 +48,7 @@ def trainGA(df, parameter_size = 8,n_individuals = 100,cross_rate = 0.5,mutation
     CROSS_RATE = cross_rate       # mating probability (DNA crossover)
     MUTATION_RATE = mutation_rate   # mutation probability
     N_GENERATIONS = n_generation
-
+    np.random.seed(42)
     pop = np.random.uniform(-15,15,(POP_SIZE,DNA_SIZE)).round(0)
     pop[:,4] = np.random.uniform(2,5,POP_SIZE).round(2)
     pop[:,5] = np.random.uniform(1,5,POP_SIZE).round(2)
@@ -58,7 +58,7 @@ def trainGA(df, parameter_size = 8,n_individuals = 100,cross_rate = 0.5,mutation
 
     
     fitness = np.array([_fitness(individual,df)for individual in pop])
-    
+  
     
     for i in range(N_GENERATIONS):
     #GA part (evolution)
