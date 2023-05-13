@@ -1,0 +1,496 @@
+
+Testing Date:	 2023/05/13 19:48:41
+Strategy:	 Voting Strategy
+Trading pair:	BTC/AUD
+Starting AUD:	100
+Number of Iteration:	12
+
+
+
+
+************************************************************************************************************************************************************************************
+
+Iteration:	 1 / 12
+
+Training Data:
+	From:	 2021-05-29 08:00:00	To:	 2021-07-11 08:00:00	 Size:	(44, 6) 
+Testing Data:
+	From:	 2021-06-28 08:00:00	To:	 2021-08-10 08:00:00	 Size:	(44, 6) 
+
+Genetic Algorithm Optimization:
+Best Parameter:
+	mfi_buy_threshold_divergence=	0.0
+	mfi_sell_threshold_divergence=	15.0
+	d_buy_threshold_divergence=	-4.0
+	d_sell_threshold_divergence=	-9.0
+	d_w=	4.58
+	kd_w=	3.12
+	ema_w=	2.14
+	mfi_w=	3.08
+Training_Fitness:100.0
+
+==================================================                  Voting Strategy Performance with Testing Data                   ================================================== 
+Profit Percentage: 	 36.321% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 1/1 
+
+Transaction Record:
+	Date:2021-07-21 08:00:00	Action:buy	Price:43679.7	Amount(BTC)0.002243605152965794	Commission(AUD):2.0
+	Date:2021-08-10 08:00:00	Action:sell	Price:62000.0	Amount(BTC)0.0021987330499064783	Commission(AUD):2.782070389677585	Net Profit(AUD):36.32140422209861
+
+==================================================               Buy and Hold Strategy Performance with Testing Data                ================================================== 
+Profit Percentage: 	 33.778% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 1/1 
+
+Transaction Record:
+	Date:2021-07-12 08:00:00	Action:buy	Price:44510.0	Amount(BTC)0.0022017524151875982	Commission(AUD):2.0
+	Date:2021-08-10 08:00:00	Action:sell	Price:62000.0	Amount(BTC)0.002157717366883846	Commission(AUD):2.7301729948326217	Net Profit(AUD):33.778432711750185
+
+
+************************************************************************************************************************************************************************************
+
+Iteration:	 2 / 12
+
+Training Data:
+	From:	 2021-06-28 08:00:00	To:	 2021-08-10 08:00:00	 Size:	(44, 6) 
+Testing Data:
+	From:	 2021-07-28 08:00:00	To:	 2021-09-09 08:00:00	 Size:	(44, 6) 
+
+Genetic Algorithm Optimization:
+Best Parameter:
+	mfi_buy_threshold_divergence=	-1.0
+	mfi_sell_threshold_divergence=	14.0
+	d_buy_threshold_divergence=	-13.0
+	d_sell_threshold_divergence=	-14.0
+	d_w=	4.98
+	kd_w=	1.44
+	ema_w=	1.15
+	mfi_w=	2.96
+Training_Fitness:141.04493698021406
+
+==================================================                  Voting Strategy Performance with Testing Data                   ================================================== 
+Profit Percentage: 	 0.0% 
+Total Trade Made (Buy+Sell):	 0 times 
+Win Rate:	 0/0 
+
+Transaction Record:
+
+==================================================               Buy and Hold Strategy Performance with Testing Data                ================================================== 
+Profit Percentage: 	 -2.198% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 0/1 
+
+Transaction Record:
+	Date:2021-08-11 08:00:00	Action:buy	Price:61936.8	Amount(BTC)0.0015822580436832382	Commission(AUD):2.0
+	Date:2021-09-09 08:00:00	Action:sell	Price:63073.3	Amount(BTC)0.0015506128828095735	Commission(AUD):1.9959647253329198	Net Profit(AUD):-2.1977601038477985
+
+
+************************************************************************************************************************************************************************************
+
+Iteration:	 3 / 12
+
+Training Data:
+	From:	 2021-07-28 08:00:00	To:	 2021-09-09 08:00:00	 Size:	(44, 6) 
+Testing Data:
+	From:	 2021-08-27 08:00:00	To:	 2021-10-09 08:00:00	 Size:	(44, 6) 
+
+Genetic Algorithm Optimization:
+Best Parameter:
+	mfi_buy_threshold_divergence=	5.0
+	mfi_sell_threshold_divergence=	-11.0
+	d_buy_threshold_divergence=	-6.0
+	d_sell_threshold_divergence=	11.0
+	d_w=	4.15
+	kd_w=	2.99
+	ema_w=	2.52
+	mfi_w=	2.82
+Training_Fitness:101.62259408390507
+
+==================================================                  Voting Strategy Performance with Testing Data                   ================================================== 
+Profit Percentage: 	 20.265% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 1/1 
+
+Transaction Record:
+	Date:2021-09-22 08:00:00	Action:buy	Price:60410.0	Amount(BTC)0.0016222479721900347	Commission(AUD):2.0
+	Date:2021-10-09 08:00:00	Action:sell	Price:75648.0	Amount(BTC)0.001589803012746234	Commission(AUD):2.454396292004635	Net Profit(AUD):20.265385863267667
+
+==================================================               Buy and Hold Strategy Performance with Testing Data                ================================================== 
+Profit Percentage: 	 19.008% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 1/1 
+
+Transaction Record:
+	Date:2021-09-10 08:00:00	Action:buy	Price:61048.2	Amount(BTC)0.0016052889356279138	Commission(AUD):2.0
+	Date:2021-10-09 08:00:00	Action:sell	Price:75648.0	Amount(BTC)0.0015731831569153554	Commission(AUD):2.4287379480476083	Net Profit(AUD):19.008127348554098
+
+
+************************************************************************************************************************************************************************************
+
+Iteration:	 4 / 12
+
+Training Data:
+	From:	 2021-08-27 08:00:00	To:	 2021-10-09 08:00:00	 Size:	(44, 6) 
+Testing Data:
+	From:	 2021-09-26 08:00:00	To:	 2021-11-08 08:00:00	 Size:	(44, 6) 
+
+Genetic Algorithm Optimization:
+Best Parameter:
+	mfi_buy_threshold_divergence=	11.0
+	mfi_sell_threshold_divergence=	1.0
+	d_buy_threshold_divergence=	-5.0
+	d_sell_threshold_divergence=	-13.0
+	d_w=	2.07
+	kd_w=	2.0
+	ema_w=	1.55
+	mfi_w=	4.78
+Training_Fitness:124.99606735290425
+
+==================================================                  Voting Strategy Performance with Testing Data                   ================================================== 
+Profit Percentage: 	 0.0% 
+Total Trade Made (Buy+Sell):	 0 times 
+Win Rate:	 0/0 
+
+Transaction Record:
+
+==================================================               Buy and Hold Strategy Performance with Testing Data                ================================================== 
+Profit Percentage: 	 16.486% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 1/1 
+
+Transaction Record:
+	Date:2021-10-10 08:00:00	Action:buy	Price:75187.6	Amount(BTC)0.0013034064127595507	Commission(AUD):2.0
+	Date:2021-11-08 08:00:00	Action:sell	Price:91194.7	Amount(BTC)0.0012773382845043598	Commission(AUD):2.377275135793668	Net Profit(AUD):16.48645558576149
+
+
+************************************************************************************************************************************************************************************
+
+Iteration:	 5 / 12
+
+Training Data:
+	From:	 2021-09-26 08:00:00	To:	 2021-11-08 08:00:00	 Size:	(44, 6) 
+Testing Data:
+	From:	 2021-10-26 08:00:00	To:	 2021-12-08 08:00:00	 Size:	(44, 6) 
+
+Genetic Algorithm Optimization:
+Best Parameter:
+	mfi_buy_threshold_divergence=	-2.0
+	mfi_sell_threshold_divergence=	-0.0
+	d_buy_threshold_divergence=	9.0
+	d_sell_threshold_divergence=	8.0
+	d_w=	4.66
+	kd_w=	3.31
+	ema_w=	2.02
+	mfi_w=	4.53
+Training_Fitness:106.7790618241225
+
+==================================================                  Voting Strategy Performance with Testing Data                   ================================================== 
+Profit Percentage: 	 -14.886% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 0/1 
+
+Transaction Record:
+	Date:2021-11-30 08:00:00	Action:buy	Price:79939.4	Amount(BTC)0.0012259286409455163	Commission(AUD):2.0
+	Date:2021-12-08 08:00:00	Action:sell	Price:70844.7	Amount(BTC)0.001201410068126606	Commission(AUD):1.7370109357838563	Net Profit(AUD):-14.886488665163867
+
+==================================================               Buy and Hold Strategy Performance with Testing Data                ================================================== 
+Profit Percentage: 	 -25.531% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 0/1 
+
+Transaction Record:
+	Date:2021-11-09 08:00:00	Action:buy	Price:91365.5	Amount(BTC)0.0010726149367102462	Commission(AUD):2.0
+	Date:2021-12-08 08:00:00	Action:sell	Price:70844.7	Amount(BTC)0.0010511626379760414	Commission(AUD):1.5197816681351277	Net Profit(AUD):-25.530719713677485
+
+
+************************************************************************************************************************************************************************************
+
+Iteration:	 6 / 12
+
+Training Data:
+	From:	 2021-10-26 08:00:00	To:	 2021-12-08 08:00:00	 Size:	(44, 6) 
+Testing Data:
+	From:	 2021-11-25 08:00:00	To:	 2022-01-07 08:00:00	 Size:	(44, 6) 
+
+Genetic Algorithm Optimization:
+Best Parameter:
+	mfi_buy_threshold_divergence=	-11.0
+	mfi_sell_threshold_divergence=	11.0
+	d_buy_threshold_divergence=	15.0
+	d_sell_threshold_divergence=	-15.0
+	d_w=	1.66
+	kd_w=	3.87
+	ema_w=	2.52
+	mfi_w=	4.79
+Training_Fitness:92.70021057981789
+
+==================================================                  Voting Strategy Performance with Testing Data                   ================================================== 
+Profit Percentage: 	 -8.909% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 0/1 
+
+Transaction Record:
+	Date:2021-12-22 08:00:00	Action:buy	Price:67714.5	Amount(BTC)0.0014472528040523078	Commission(AUD):2.0
+	Date:2021-12-29 08:00:00	Action:sell	Price:64225.1	Amount(BTC)0.0014183077479712617	Commission(AUD):1.8589991213107975	Net Profit(AUD):-8.90907200082701
+
+==================================================               Buy and Hold Strategy Performance with Testing Data                ================================================== 
+Profit Percentage: 	 -16.854% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 0/1 
+
+Transaction Record:
+	Date:2021-12-09 08:00:00	Action:buy	Price:66980.9	Amount(BTC)0.0014631036608943745	Commission(AUD):2.0
+	Date:2022-01-07 08:00:00	Action:sell	Price:57988.0	Amount(BTC)0.001433841587676487	Commission(AUD):1.6968491017588598	Net Profit(AUD):-16.854423275889076
+
+
+************************************************************************************************************************************************************************************
+
+Iteration:	 7 / 12
+
+Training Data:
+	From:	 2021-11-25 08:00:00	To:	 2022-01-07 08:00:00	 Size:	(44, 6) 
+Testing Data:
+	From:	 2021-12-25 08:00:00	To:	 2022-02-06 08:00:00	 Size:	(44, 6) 
+
+Genetic Algorithm Optimization:
+Best Parameter:
+	mfi_buy_threshold_divergence=	-5.0
+	mfi_sell_threshold_divergence=	-13.0
+	d_buy_threshold_divergence=	-14.0
+	d_sell_threshold_divergence=	9.0
+	d_w=	2.45
+	kd_w=	3.62
+	ema_w=	2.7
+	mfi_w=	4.58
+Training_Fitness:100.0
+
+==================================================                  Voting Strategy Performance with Testing Data                   ================================================== 
+Profit Percentage: 	 -3.009% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 0/1 
+
+Transaction Record:
+	Date:2022-01-11 08:00:00	Action:buy	Price:59540.4	Amount(BTC)0.0016459412432566795	Commission(AUD):2.0
+	Date:2022-02-06 08:00:00	Action:sell	Price:60130.0	Amount(BTC)0.001613022418391546	Commission(AUD):1.979408939140483	Net Profit(AUD):-3.008994900941204
+
+==================================================               Buy and Hold Strategy Performance with Testing Data                ================================================== 
+Profit Percentage: 	 -1.052% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 0/1 
+
+Transaction Record:
+	Date:2022-01-08 08:00:00	Action:buy	Price:58363.0	Amount(BTC)0.0016791460343025548	Commission(AUD):2.0
+	Date:2022-02-06 08:00:00	Action:sell	Price:60130.0	Amount(BTC)0.0016455631136165036	Commission(AUD):2.0193410208522526	Net Profit(AUD):-1.0523235611603212
+
+
+************************************************************************************************************************************************************************************
+
+Iteration:	 8 / 12
+
+Training Data:
+	From:	 2021-12-25 08:00:00	To:	 2022-02-06 08:00:00	 Size:	(44, 6) 
+Testing Data:
+	From:	 2022-01-24 08:00:00	To:	 2022-03-08 08:00:00	 Size:	(44, 6) 
+
+Genetic Algorithm Optimization:
+Best Parameter:
+	mfi_buy_threshold_divergence=	-11.0
+	mfi_sell_threshold_divergence=	15.0
+	d_buy_threshold_divergence=	3.0
+	d_sell_threshold_divergence=	9.0
+	d_w=	3.75
+	kd_w=	2.35
+	ema_w=	1.65
+	mfi_w=	3.02
+Training_Fitness:111.51376329260826
+
+==================================================                  Voting Strategy Performance with Testing Data                   ================================================== 
+Profit Percentage: 	 -5.788% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 0/1 
+
+Transaction Record:
+	Date:2022-02-26 08:00:00	Action:buy	Price:54211.8	Amount(BTC)0.0018077245175404616	Commission(AUD):2.0
+	Date:2022-03-04 08:00:00	Action:sell	Price:53180.0	Amount(BTC)0.0017715700271896523	Commission(AUD):1.922695796856035	Net Profit(AUD):-5.787942108544641
+
+==================================================               Buy and Hold Strategy Performance with Testing Data                ================================================== 
+Profit Percentage: 	 -17.173% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 0/1 
+
+Transaction Record:
+	Date:2022-02-07 08:00:00	Action:buy	Price:61731.8	Amount(BTC)0.0015875124328142058	Commission(AUD):2.0
+	Date:2022-03-08 08:00:00	Action:sell	Price:53239.1	Amount(BTC)0.0015557621841579218	Commission(AUD):1.6903546632367759	Net Profit(AUD):-17.172653251646636
+
+
+************************************************************************************************************************************************************************************
+
+Iteration:	 9 / 12
+
+Training Data:
+	From:	 2022-01-24 08:00:00	To:	 2022-03-08 08:00:00	 Size:	(44, 6) 
+Testing Data:
+	From:	 2022-02-23 08:00:00	To:	 2022-04-07 08:00:00	 Size:	(44, 6) 
+
+Genetic Algorithm Optimization:
+Best Parameter:
+	mfi_buy_threshold_divergence=	-9.0
+	mfi_sell_threshold_divergence=	15.0
+	d_buy_threshold_divergence=	-9.0
+	d_sell_threshold_divergence=	14.0
+	d_w=	1.82
+	kd_w=	2.43
+	ema_w=	2.34
+	mfi_w=	3.13
+Training_Fitness:103.90755766365925
+
+==================================================                  Voting Strategy Performance with Testing Data                   ================================================== 
+Profit Percentage: 	 5.753% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 1/1 
+
+Transaction Record:
+	Date:2022-03-14 08:00:00	Action:buy	Price:55131.5	Amount(BTC)0.0017775681779019254	Commission(AUD):2.0
+	Date:2022-03-31 08:00:00	Action:sell	Price:60707.2	Amount(BTC)0.001742016814343887	Commission(AUD):2.1582237377905553	Net Profit(AUD):5.752927600373653
+
+==================================================               Buy and Hold Strategy Performance with Testing Data                ================================================== 
+Profit Percentage: 	 -2.696% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 0/1 
+
+Transaction Record:
+	Date:2022-03-09 08:00:00	Action:buy	Price:57451.8	Amount(BTC)0.0017057777127957696	Commission(AUD):2.0
+	Date:2022-04-07 08:00:00	Action:sell	Price:58207.7	Amount(BTC)0.0016716621585398542	Commission(AUD):1.9857879474620461	Net Profit(AUD):-2.6964246899139965
+
+
+************************************************************************************************************************************************************************************
+
+Iteration:	 10 / 12
+
+Training Data:
+	From:	 2022-02-23 08:00:00	To:	 2022-04-07 08:00:00	 Size:	(44, 6) 
+Testing Data:
+	From:	 2022-03-25 08:00:00	To:	 2022-05-07 08:00:00	 Size:	(44, 6) 
+
+Genetic Algorithm Optimization:
+Best Parameter:
+	mfi_buy_threshold_divergence=	15.0
+	mfi_sell_threshold_divergence=	1.0
+	d_buy_threshold_divergence=	12.0
+	d_sell_threshold_divergence=	-11.0
+	d_w=	2.29
+	kd_w=	2.96
+	ema_w=	2.0
+	mfi_w=	4.99
+Training_Fitness:117.39475769648399
+
+==================================================                  Voting Strategy Performance with Testing Data                   ================================================== 
+Profit Percentage: 	 -14.181% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 0/1 
+
+Transaction Record:
+	Date:2022-04-25 08:00:00	Action:buy	Price:56354.6	Amount(BTC)0.0017389884765396258	Commission(AUD):2.0
+	Date:2022-05-07 08:00:00	Action:sell	Price:50356.9	Amount(BTC)0.0017042087070088332	Commission(AUD):1.7514013762851657	Net Profit(AUD):-14.181367341796417
+
+==================================================               Buy and Hold Strategy Performance with Testing Data                ================================================== 
+Profit Percentage: 	 -14.752% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 0/1 
+
+Transaction Record:
+	Date:2022-04-08 08:00:00	Action:buy	Price:56731.6	Amount(BTC)0.0017274323304824824	Commission(AUD):2.0
+	Date:2022-05-07 08:00:00	Action:sell	Price:50356.9	Amount(BTC)0.0016928836838728328	Commission(AUD):1.7397627424574664	Net Profit(AUD):-14.751660168230757
+
+
+************************************************************************************************************************************************************************************
+
+Iteration:	 11 / 12
+
+Training Data:
+	From:	 2022-03-25 08:00:00	To:	 2022-05-07 08:00:00	 Size:	(44, 6) 
+Testing Data:
+	From:	 2022-04-24 08:00:00	To:	 2022-06-06 08:00:00	 Size:	(44, 6) 
+
+Genetic Algorithm Optimization:
+Best Parameter:
+	mfi_buy_threshold_divergence=	-13.0
+	mfi_sell_threshold_divergence=	12.0
+	d_buy_threshold_divergence=	-13.0
+	d_sell_threshold_divergence=	-3.0
+	d_w=	2.29
+	kd_w=	1.26
+	ema_w=	2.84
+	mfi_w=	3.57
+Training_Fitness:100.0
+
+==================================================                  Voting Strategy Performance with Testing Data                   ================================================== 
+Profit Percentage: 	 0.0% 
+Total Trade Made (Buy+Sell):	 0 times 
+Win Rate:	 0/0 
+
+Transaction Record:
+
+==================================================               Buy and Hold Strategy Performance with Testing Data                ================================================== 
+Profit Percentage: 	 -13.108% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 0/1 
+
+Transaction Record:
+	Date:2022-05-08 08:00:00	Action:buy	Price:48242.2	Amount(BTC)0.0020314164776896577	Commission(AUD):2.0
+	Date:2022-06-06 08:00:00	Action:sell	Price:43646.8	Amount(BTC)0.0019907881481358645	Commission(AUD):1.7732965743684992	Net Profit(AUD):-13.108508484273102
+
+
+************************************************************************************************************************************************************************************
+
+Iteration:	 12 / 12
+
+Training Data:
+	From:	 2022-04-24 08:00:00	To:	 2022-06-06 08:00:00	 Size:	(44, 6) 
+Testing Data:
+	From:	 2022-05-24 08:00:00	To:	 2022-07-06 08:00:00	 Size:	(44, 6) 
+
+Genetic Algorithm Optimization:
+Best Parameter:
+	mfi_buy_threshold_divergence=	0.0
+	mfi_sell_threshold_divergence=	-12.0
+	d_buy_threshold_divergence=	10.0
+	d_sell_threshold_divergence=	8.0
+	d_w=	3.89
+	kd_w=	1.74
+	ema_w=	2.66
+	mfi_w=	1.2
+Training_Fitness:102.05154560969137
+
+==================================================                  Voting Strategy Performance with Testing Data                   ================================================== 
+Profit Percentage: 	 -2.812% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 0/1 
+
+Transaction Record:
+	Date:2022-06-27 08:00:00	Action:buy	Price:29929.3	Amount(BTC)0.003274383296635738	Commission(AUD):2.0
+	Date:2022-07-06 08:00:00	Action:sell	Price:30287.0	Amount(BTC)0.0032088956307030235	Commission(AUD):1.983424938104132	Net Profit(AUD):-2.81224352056347
+
+==================================================               Buy and Hold Strategy Performance with Testing Data                ================================================== 
+Profit Percentage: 	 -32.605% 
+Total Trade Made (Buy+Sell):	 1 times 
+Win Rate:	 0/1 
+
+Transaction Record:
+	Date:2022-06-07 08:00:00	Action:buy	Price:43160.0	Amount(BTC)0.0022706209453197406	Commission(AUD):2.0
+	Date:2022-07-06 08:00:00	Action:sell	Price:30287.0	Amount(BTC)0.002225208526413346	Commission(AUD):1.3754059314179796	Net Profit(AUD):-32.60515477293791
+
+
+************************************************************************************************************************************************************************************
+
+
+
+
+====================================================================================================================================================================================
+                                                                                    Final Report                                                                                    
+====================================================================================================================================================================================
+
+Total Win Rate:	10/12
+Total Net Profit:	12.753944820708966 AUD
+Buy and Hold Total Profit:	-56.696207768904515 AUD

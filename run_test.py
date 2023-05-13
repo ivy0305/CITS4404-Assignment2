@@ -45,11 +45,17 @@ def trainPSOVotingProblem(train_data):
     print("Best solution found: \nX = %s\nF = $%s\n" % (res.X, -1 * res.F[0]))
     
     return res.X,res.F[0]
+
+
+
 def trainGAVotingProblem(train_data):
     write2file(filename,f'Genetic Algorithm Optimization:\n')
     x,fitness=trainGA(train_data, parameter_size = 8,n_individuals = 100,cross_rate = 0.5,mutation_rate = 0.2,n_generation= 50)
     print("Best solution found: \nX = %s\nF = $%s\n" % (x,  -1*fitness))
     return x, fitness
+
+
+
 
 def trainFATRLSVotingProblem(train_data):
     write2file(filename,f'FATRLS Algorithm Optimization:\n')
