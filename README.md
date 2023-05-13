@@ -18,14 +18,11 @@ git checkout kc_bot
 ```
 pipenv install
 ```
-4. Activate the virtual environment 
+4. Run the run_test.py file in pipenv
 ```
-pipenv shell
+pipenv run start
 ```
-5. Run the bot
-```
-python3 run_test.py
-```
+
 ## Code File Description
 #### Bot.py : 
 1.	Calculate and Record data related to Transaction (e.g. Profit, Trading record)
