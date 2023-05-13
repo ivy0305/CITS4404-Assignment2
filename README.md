@@ -24,7 +24,7 @@ pipenv shell
 ```
 5. Run the bot
 ```
-python run_test.py
+python3 run_test.py
 ```
 ## Code File Description
 #### Bot.py : 
